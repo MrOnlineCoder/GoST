@@ -4,21 +4,21 @@
 
 namespace gost{
 	
-		///	конструктор
+		//	конструктор
 	gtMainSystemWin32::gtMainSystemWin32( const gtDeviceCreationParameters& params ){
 		m_params = params;
 	}
 
-		///	деструктор
+		//	деструктор
 	gtMainSystemWin32::~gtMainSystemWin32( void ){
 	}
 
-		///	возвратит укозатель на окно вывода
+		//	возвратит укозатель на окно вывода
 	gtOutputWindow* gtMainSystemWin32::getOutputWindow( void ){
 		return this->m_output_window.data();
 	}
 
-		///	инициализация системы
+		//	инициализация системы
 	bool	gtMainSystemWin32::init( void ){
 
 		{		
@@ -32,16 +32,23 @@ namespace gost{
 			}
 			
 			gtLog->setOutputWindow( m_output_window.data() );
-			gtLog->print(gtLoger::level::info, u"Starting GoST version %i.%i", 0, 1 );
+			m_output_window->release();
 
 			this->initStackTracer();
-			
+
+			this->s_fileSystem = new gtFileSystemWin32;
+
+			if( this->s_fileSystem->existFile( u"log.txt" ) )
+				this->s_fileSystem->deleteFile( u"log.txt" );
+
+			gtLog->print(gtLoger::level::info, u"Starting GoST version %i.%i", 0, 1 );
+
 		}
 		
 		return true;
 	}
 
-		///	получает и обрабатывает оконные сообщения
+		//	получает и обрабатывает оконные сообщения
 	void gtMainSystemWin32::updateWindowEvents( void ){
 		MSG msg;
 		while( PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE ) ){
@@ -63,6 +70,29 @@ namespace gost{
 	void gtMainSystemWin32::quit( void ){
 		m_isRun = false;
 	}
+
+	gtWindow*	gtMainSystemWin32::createSystemWindow( const gtWindowInfo& wi ){
+		gtPtr< gtWindow > window( gtPtrNew< gtWindow >( new gtWindowWin32( wi ) ) );
+
+		if( !((gtWindowWin32*)window.data())->init( ++m_systemWindowCount ) ){
+			gtLogWriter::printError( u"Can not create system window" );
+			gtStackTrace::dumpStackTrace();
+			return nullptr;
+		}
+
+			//	при завершении, так как вставляются gtPtr
+			//	удалится всё (должно)
+	//	this->m_windowCache.add( gtPtr< gtWindow >(window) );
+		window->addRef();
+
+#ifdef GT_DEBUG
+		window->setDebugName( u"SystemWindow" );
+#endif
+
+		return window.data();
+	}
+
+
 }
 /*
 Copyright (c) 2017 532235

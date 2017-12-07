@@ -10,7 +10,7 @@
 
 namespace gost{
 	
-		///	Перечисление ОС
+		//	Перечисление ОС
 	enum class gtDeviceType{
 		android,
 		ios,
@@ -23,7 +23,7 @@ namespace gost{
 		//хватит
 	};
 
-		///	В этой структуре будут находится параметры для запуска главной системы
+		//	В этой структуре будут находится параметры для запуска главной системы
 	struct gtDeviceCreationParameters{
 		gtDeviceCreationParameters( void ){
 #if defined(GT_PLATFORM_WIN32)
@@ -35,29 +35,31 @@ namespace gost{
 		}
 		~gtDeviceCreationParameters( void ){}
 
-			///	Тип Операционной системы на которой будет работать программа
+			//	Тип Операционной системы на которой будет работать программа
 		gtDeviceType		m_device_type;
 
-			///	если nullptr то будет создано стандартное окно вывода
+			//	если nullptr то будет создано стандартное окно вывода
 		gtOutputWindow*		m_outputWindow;
 
 	};
 
-		///	Основной класс движка
+		//	Основной класс движка
 	class gtMainSystem : public gtRefObject{
 	public:
 
-			///	Для начала эта функция подойдёт.
-			///	Как раз пригодится в будущем.
+			//	Для начала эта функция подойдёт.
+			//	Как раз пригодится в будущем.
 		virtual gtOutputWindow* getOutputWindow( void ) = 0;
 
-			///	Получить логер
+			//	Получить логер
 		virtual gtLoger*		getLoger( void ) = 0;
 
-
-			///	Используется для главного цикла. Возвращает true если всё впорядке, или не был послан сигнал о завершении работы
+			//	Используется для главного цикла. Возвращает true если всё впорядке, или не был послан сигнал о завершении работы
 		virtual	bool	update( void ) = 0;
-
+			
+			//	Создаёт окно, которое можно использовать для рисования 3D сцены
+		virtual gtWindow*	createSystemWindow( const gtWindowInfo& ) = 0;
+		
 	};
 
 }

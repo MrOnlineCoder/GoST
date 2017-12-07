@@ -10,10 +10,14 @@
 
 namespace gost{
 
+	
 		///	Общий класс для конкретных реализаций gtMainSystem
 	class gtLogerImpl;
 	class gtMainSystemCommon : public gtMainSystem{
 	protected:
+
+		gtList< gtPtr< gtWindow > > m_windowCache;
+
 
 			///	параметры главной системы
 		gtDeviceCreationParameters	m_params;
@@ -27,6 +31,8 @@ namespace gost{
 			///	по сути это this
 		static gtMainSystemCommon*	s_instance;
 
+		u32 m_systemWindowCount;
+
 	public:
 
 			///	конструктор
@@ -36,6 +42,8 @@ namespace gost{
 		virtual ~gtMainSystemCommon( void );
 
 		static gtPtr<gtLogerImpl> s_loger;
+
+		static gtFileSystemCommon* s_fileSystem;
 		
 
 		gtLoger*		getLoger( void );
@@ -62,7 +70,7 @@ namespace gost{
 #endif
 
 /*
-Copyright (c) 2017
+Copyright (c) 2017 532235
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 

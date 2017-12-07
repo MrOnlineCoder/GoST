@@ -26,17 +26,19 @@ namespace gost{
 			///	конструктор
 		gtMainSystemWin32( const gtDeviceCreationParameters& );
 
-			///	деструктор
+			//	деструктор
 		~gtMainSystemWin32( void );
 
 
-			///	инициализация в отдельном методе чтобы не занимались проблемами внутри конструктора
+			//	инициализация в отдельном методе чтобы не занимались проблемами внутри конструктора
 		bool	init( void );
 
-			///	получить окно вывода
+			//	получить окно вывода
 		gtOutputWindow* getOutputWindow( void ) GT_FINAL;
 
 		bool	update( void ) GT_FINAL;
+
+		gtWindow*	createSystemWindow( const gtWindowInfo& );
 	};
 
 }

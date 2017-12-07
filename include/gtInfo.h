@@ -10,6 +10,18 @@
 
 namespace gost{
 
+		///	для того чтобы в макрос вставлялись кавычки
+		///	например
+		///	#define PRINT(x) printf(QUOTE(x))
+		///	...
+		///	PRINT(int); // вывод "int"
+	#define Q(x) #x
+	#define QUOTE(x) Q(x)
+
+	#define GT_MAKEFOURCC( ch0, ch1, ch2, ch3 )\
+            ((u32)(u8)(ch0)|((u32)(u8)(ch1)<<8)|\
+            ((u32)(u8)(ch2)<<16)|((u32)(u8)(ch3)<<24))
+
 	//	Компилятор
 	#if defined(__clang__)
 	#	define GT_COMPILER_CLANG

@@ -17,13 +17,24 @@ namespace gost{
 		//	ненужно создавать объект вручную
 		GT_FORCE_INLINE gtBaseObject( void ){}
 
+#if defined(GT_DEBUG)
+		//	в дебагере, в методе gtPtr::release может понадобится знать, какой объект уничтожается
+		gtString m_debugName;
+#endif
+
 	public:
+
 
 		virtual ~gtBaseObject( void ){}
 
-		//	первая виртуальная функция в vtable
-		//	апплодисменты тому кто узнает откуда идея кода
-		virtual void special_fix_for_playstation( void ){}
+		
+		virtual void first_vtable_function( void ){}
+
+
+#if defined(GT_DEBUG)
+		virtual void setDebugName( const gtString& s ){ m_debugName = s; }
+#endif
+
 	};
 
 }
@@ -31,7 +42,7 @@ namespace gost{
 #endif
 
 /*
-Copyright (c) 2017
+Copyright (c) 2017 532235
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 

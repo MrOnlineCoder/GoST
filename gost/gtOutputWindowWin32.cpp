@@ -23,6 +23,7 @@ void	gtOutputWindowWin32::init( void ){
 	if( m_isInit ) return;
 
 	//	Нужно создать windows окно
+	m_wc.style		   = CS_HREDRAW | CS_VREDRAW;
 	m_wc.lpfnWndProc   = ( WNDPROC )OutWndProc;
 	m_wc.hInstance     = GetModuleHandle( 0 );
 	m_wc.hIcon         = NULL;//LoadIcon( wc.hInstance, MAKEINTRESOURCE(IDI_ICON1));
@@ -38,7 +39,8 @@ void	gtOutputWindowWin32::init( void ){
 	}
 
 	// Стиль окна
-	u32 style = WS_OVERLAPPEDWINDOW;
+	u32 style = WS_BORDER | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX
+		| WS_CLIPCHILDREN;
 	
 	m_windowRect.left = 20;
 	m_windowRect.top = 20;
@@ -63,10 +65,22 @@ void	gtOutputWindowWin32::init( void ){
 
 	HMENU menu = CreateMenu();
 	HMENU menuitem = CreateMenu();
+	HMENU menusubitem = CreateMenu();
 	
 	
 	AppendMenu( menuitem, MF_STRING, GT_MENU_ID_OUTPUT_FILE_SAVE, L"&Save" );
+	//AppendMenu( menuitem, MF_STRING, GT_MENU_ID_OUTPUT_FILE_SAVE, L"&Open" );
+
+	AppendMenu( menusubitem, MF_STRING, 1, L"&Open" );
+	AppendMenu( menusubitem, MF_SEPARATOR, 0, 0 );
+	AppendMenu( menusubitem, MF_STRING, 2, L"file.txt" );
+	AppendMenu( menusubitem, MF_STRING, 3, L"file2.txt" );
+	AppendMenu( menuitem, MF_POPUP, (UINT_PTR)menusubitem, L"&Open" );
+
 	AppendMenu( menu, MF_POPUP, (UINT_PTR)menuitem, L"&File" );
+
+
+
 
 	menuitem = CreateMenu();
 	AppendMenu( menuitem, MF_STRING, GT_MENU_ID_OUTPUT_EDIT_CLEAR, L"&Clear" );
@@ -96,7 +110,7 @@ void	gtOutputWindowWin32::init( void ){
 	
 	
 	ReleaseDC( m_hWnd, hDC );
-	m_hWndBuffer = CreateWindow( L"edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER |
+	m_hWndBuffer = CreateWindow( L"edit", NULL, WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER |
 									ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
 									1, 1, m_windowRect.right-20,
 									m_windowRect.bottom-100,
@@ -169,7 +183,7 @@ LRESULT CALLBACK gtOutputWindowWin32::OutWndProc( HWND hWnd, UINT uMsg, WPARAM w
 			output = reinterpret_cast<gtOutputWindowWin32*>(GetWindowLongPtr(hWnd, -21));
 		}
 	}
-
+	
 	switch( uMsg ){
 		case WM_CTLCOLORSTATIC:
 			if ( ( HWND ) lParam == output->m_hWndBuffer ) {
@@ -178,16 +192,24 @@ LRESULT CALLBACK gtOutputWindowWin32::OutWndProc( HWND hWnd, UINT uMsg, WPARAM w
 				return ( long ) output->m_hbrEditBackground;
 			}
 			break;
+		case WM_VSCROLL:{
+				RedrawWindow(output->m_hWndBuffer, NULL, NULL, RDW_ERASE | RDW_INVALIDATE) ;
+		}break;
 		case WM_COMMAND:{
 			if( wParam == GT_MENU_ID_OUTPUT_EDIT_CLEAR ){
 				output->clear_buffer();
 			}else if( wParam == GT_MENU_ID_OUTPUT_FILE_SAVE ){
 				output->save();
 			}
+
+			if( HIWORD(wParam) == EN_VSCROLL )
+				RedrawWindow(output->m_hWndBuffer, NULL, NULL, RDW_ERASE | RDW_INVALIDATE) ;
+		}break;
+		case WM_MOUSEMOVE:{
 		}break;
 		case WM_SYSCOMMAND:
 			if( wParam == SC_CLOSE ){
-				PostQuitMessage( 0 );
+				output->hide();
 			}
 			break;
 		case WM_SIZING:

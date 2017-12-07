@@ -1,54 +1,57 @@
-п»ї//	GOST
+//	GOST
 
-/* 
-	Р—РґРµСЃСЊ Р±СѓРґСѓС‚ СЌРєСЃРїРѕСЂС‚РёСЂСѓРµРјС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ Р·Р°РїСѓСЃРєР° РґРІРёР¶РєР°
-*/
-#include "stdafx.h"
-
-#include <gost.h>
+#pragma once
+#ifndef __GT_FILE_WIN_32_H__
+#define __GT_FILE_WIN_32_H__
 
 namespace gost{
 
-GT_API gtMainSystem* InitializeGoSTEngine( const gtDeviceCreationParameters& params ){
+	class gtFileWin32 GT_FINAL : public gtFile{
 
-	gtMainSystem*	main_system( nullptr );
+		gtFile::TextFileInfo m_textInfo;
 
-	switch( params.m_device_type ){
-#if defined( GT_PLATFORM_WIN32 )
-		case gtDeviceType::windows:{
-			main_system = new gtMainSystemWin32( params );
+		HANDLE m_handle;
 
-			if( !((gtMainSystemWin32*)main_system)->init() ){
-				
-				MessageBox( 0, L"Can not initialize GoST", L"Error", MB_OK | MB_ICONERROR );
+		bool m_isTextFile;
 
-				delete main_system;
-			}
-			
-		}
-		break;
-#endif
-		case gtDeviceType::android:
-		case gtDeviceType::ios:
-		case gtDeviceType::linux:
-		case gtDeviceType::osx:
-		case gtDeviceType::playstation:
-		case gtDeviceType::wii:
-		case gtDeviceType::xbox:
-		default:
-			return nullptr;
-			break;
-	}
+			// GENERIC_READ or GENERIC_WRITE
+		DWORD m_desiredAccess;
 
-#ifdef GT_DEBUG
-	if( main_system )
-		main_system->setDebugName( u"MainSystem" );
-#endif
+		u32 m_pointerPosition;
+	public:
+		gtFileWin32( const gtString& fileName, gtFileSystem::FileMode mode,
+			gtFileSystem::FileAccessMode access,
+			gtFileSystem::FileAction action,
+			gtFileSystem::FileShareMode EFSM,
+			u32 EFA );
+		~gtFileWin32( void );
 
-	return main_system;
+
+		TextFileInfo	getTextFileInfo( void );
+
+
+			//	для двоичной записи
+		void	write( u8 * data, u32 size );
+
+			//	для текста. Работает если файл открыт в текстовом режиме.
+		void	write( const gtStringA& string );
+		void	write( const gtString& string );
+		void	write( const gtString32& string );
+
+		void	flush( void );
+
+			//	размер в байтах
+		u32		size( void );
+			//	получить позицию указателя
+		u32		tell( void );
+			//	установить позицию указателя
+		void 	seek( u32 distance, SeekPos pos );
+	};
+
 }
 
-}
+#endif
+
 
 /*
 Copyright (c) 2017 532235

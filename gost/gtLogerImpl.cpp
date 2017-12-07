@@ -39,6 +39,10 @@ void gtLogerImpl::print( level lvl, char16_t* str, void * p ){
 		gt_va_list args = p;
 		deformat( str, args, message );
 
+		gtFile_t file = util::openFileForWriteText(u"log.txt");
+		file->write( message );
+		file->write( gtString(u"\r\n") );
+
 		m_out->print( message );
 	}
 }

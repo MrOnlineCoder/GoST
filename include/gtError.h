@@ -12,6 +12,13 @@ namespace gost{
 
 #ifdef GT_DEBUG
 
+#	define GT_ASSERT(expr,str,exprstr,v1,v2) if(!(expr)){\
+				gtLogWriter::printError(u"Assertion failed: %s", u##str );\
+				gtLogWriter::printError(u"Expected: %s [%u][%u]", u##exprstr, v1, v2 );\
+				gtLogWriter::printError(u"Source: %s, line %i", GT_FILE, GT_LINE );\
+				gtStackTrace::dumpStackTrace();\
+								GT_BREAKPOINT(0) };
+
 #	define GT_ASSERT1(expr,str,exprstr) if(!(expr)){\
 				gtLogWriter::printError(u"Assertion failed: %s", u##str );\
 				gtLogWriter::printError(u"Expected: %s", u##exprstr );\
@@ -32,11 +39,40 @@ namespace gost{
 				gtStackTrace::dumpStackTrace();\
 								GT_BREAKPOINT(0) };
 
+#if (__cplusplus > 199711L || _MSC_VER > 1800 )
+#define GT_ERROR_NEW_STYLE
+#endif
+
+namespace gtError{
+
+		///	используется для определения ошибок на этапе компиляции
+	template< s32 x > struct StaticAssert{};
+
+		///	ошибки
+	template< bool b > struct GT_VECTOR_BAD_SIZE;
+	template<> struct GT_VECTOR_BAD_SIZE<true>{ };
+}
+
+#if defined(GT_ERROR_NEW_STYLE)
+#	define GT_STATIC_ASSERT(expr,msg)\
+	static_assert(expr, QUOTE(msg) )
+#else
+
+#	define GT_STATIC_ASSERT(expr,msg)\
+	typedef gtError::StaticAssert< sizeof( msg< static_cast<bool>(expr) > ) >
+
+#endif
 
 #else
+#	define GT_ASSERT(expr,str,exprstr,v1,v2)
 #	define GT_ASSERT1(expr,str,exprstr)
 #	define GT_ASSERT2(expr,exprstr)
 #	define GT_ASSERT3(expr)
+#	define GT_STATIC_ASSERT(expr,msg)
+#	define GT_WARNING1(expr,msg1,exprstr)
+#	define GT_WARNING2(expr,msg1,code)
+#	define GT_WARNING1R(expr,msg1,exprstr)
+#	define GT_WARNING2R(expr,msg1,code)
 #endif
 
 }

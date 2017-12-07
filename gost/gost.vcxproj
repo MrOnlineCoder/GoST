@@ -151,8 +151,11 @@
   <ItemGroup>
     <ClInclude Include="..\include\gost.h" />
     <ClInclude Include="..\include\gtBaseObject.h" />
+    <ClInclude Include="..\include\gtColor.h" />
     <ClInclude Include="..\include\gtError.h" />
+    <ClInclude Include="..\include\gtFileSystem.h" />
     <ClInclude Include="..\include\gtInfo.h" />
+    <ClInclude Include="..\include\gtList.h" />
     <ClInclude Include="..\include\gtLoger.h" />
     <ClInclude Include="..\include\gtMainSystem.h" />
     <ClInclude Include="..\include\gtOutputWindow.h" />
@@ -160,10 +163,17 @@
     <ClInclude Include="..\include\gtRefObject.h" />
     <ClInclude Include="..\include\gtStackTrace.h" />
     <ClInclude Include="..\include\gtTypes.h" />
+    <ClInclude Include="..\include\gtVector.h" />
+    <ClInclude Include="..\include\gtWindow.h" />
+    <ClInclude Include="gtFileSystemCommon.h" />
+    <ClInclude Include="gtFileSystemWin32.h" />
+    <ClInclude Include="gtFileWin32.h" />
     <ClInclude Include="gtLogerImpl.h" />
     <ClInclude Include="gtMainSystemCommon.h" />
     <ClInclude Include="gtMainSystemWin32.h" />
     <ClInclude Include="gtOutputWindowWin32.h" />
+    <ClInclude Include="gtWindowCommon.h" />
+    <ClInclude Include="gtWindowWin32.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -183,10 +193,15 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="gost.cpp" />
+    <ClCompile Include="gtFileSystemCommon.cpp" />
+    <ClCompile Include="gtFileSystemWin32.cpp" />
+    <ClCompile Include="gtFileWin32.cpp" />
     <ClCompile Include="gtLogerImpl.cpp" />
     <ClCompile Include="gtMainSystemCommon.cpp" />
     <ClCompile Include="gtMainSystemWin32.cpp" />
     <ClCompile Include="gtOutputWindowWin32.cpp" />
+    <ClCompile Include="gtWindowCommon.cpp" />
+    <ClCompile Include="gtWindowWin32.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

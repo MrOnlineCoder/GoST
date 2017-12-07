@@ -1,54 +1,8 @@
-﻿//	GOST
+//	GOST
 
-/* 
-	Здесь будут экспортируемые функции для запуска движка
-*/
 #include "stdafx.h"
 
-#include <gost.h>
 
-namespace gost{
-
-GT_API gtMainSystem* InitializeGoSTEngine( const gtDeviceCreationParameters& params ){
-
-	gtMainSystem*	main_system( nullptr );
-
-	switch( params.m_device_type ){
-#if defined( GT_PLATFORM_WIN32 )
-		case gtDeviceType::windows:{
-			main_system = new gtMainSystemWin32( params );
-
-			if( !((gtMainSystemWin32*)main_system)->init() ){
-				
-				MessageBox( 0, L"Can not initialize GoST", L"Error", MB_OK | MB_ICONERROR );
-
-				delete main_system;
-			}
-			
-		}
-		break;
-#endif
-		case gtDeviceType::android:
-		case gtDeviceType::ios:
-		case gtDeviceType::linux:
-		case gtDeviceType::osx:
-		case gtDeviceType::playstation:
-		case gtDeviceType::wii:
-		case gtDeviceType::xbox:
-		default:
-			return nullptr;
-			break;
-	}
-
-#ifdef GT_DEBUG
-	if( main_system )
-		main_system->setDebugName( u"MainSystem" );
-#endif
-
-	return main_system;
-}
-
-}
 
 /*
 Copyright (c) 2017 532235

@@ -35,26 +35,26 @@ constexpr u32 gtMaxStackFrames = 1024u;
 		void shutdown( void );
 
 	public:
-			///	конструирует объект и инициализирует логер
+			//	конструирует объект и инициализирует логер
 		gtStackTrace( gtMainSystem* s ) : m_is_initialized( false ){
 			m_log = gtPtrNew<gtLoger>( s->getLoger() );
 			m_log->setOutputWindow( s->getOutputWindow() );
 		}
-			///	dtor
+			//	dtor
 		~gtStackTrace( void ){
 		}
 
-			///	skip_begin	- пропуск с начала
-			///	skip_end	- пропуск с конца
-			///	если skip_begin = 0 то будет показан gtStackTrace::printStackTrace()
-			///	что очевидно, по этому по умолчанию стоит 1
-			///	skip_end = 7 значит не напечатает последние 7
+			//	skip_begin	- пропуск с начала
+			//	skip_end	- пропуск с конца
+			//	если skip_begin = 0 то будет показан gtStackTrace::printStackTrace()
+			//	что очевидно, по этому по умолчанию стоит 1
+			//	skip_end = 7 значит не напечатает последние 7
 		void printStackTrace( u32 skip_begin = 1u, u32 skip_end = 7u );
 
-			///	движок имеет свой объект gtStackTrace
-			///	данной функцией можно вызывать printStackTrace()
-			///	всего лишь 1м предложением gtStackTrace::dumpStackTrace()
-			///	создан специально чтобы не плодить объекты gtStackTrace в разных модулях (.exe, .dll)
+			//	движок имеет свой объект gtStackTrace
+			//	данной функцией можно вызывать printStackTrace()
+			//	всего лишь 1м предложением gtStackTrace::dumpStackTrace()
+			//	создан специально чтобы не плодить объекты gtStackTrace в разных модулях (.exe, .dll)
 		GT_API static	void dumpStackTrace( void );
 
 	};
