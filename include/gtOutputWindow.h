@@ -15,8 +15,6 @@ namespace gost{
 	class gtOutputWindow : public gtRefObject {
 	public:
 
-		virtual ~gtOutputWindow(){};
-		 
 		//	Прежде чем использовать нужно вызвать Init
 		virtual	void	init( void ) = 0;
 

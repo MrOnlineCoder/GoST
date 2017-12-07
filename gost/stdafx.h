@@ -21,6 +21,7 @@
 #include <shlobj.h>
 #include <shlwapi.h>
 
+#undef CreateFile
 
 
 #define GT_EXPORTS
@@ -31,14 +32,25 @@ using namespace gost;
 
 //	GOST
 #include "gtOutputWindowWin32.h"
+
+#include "gtFileWin32.h"
+
+#include "gtFileSystemCommon.h"
+#include "gtFileSystemWin32.h"
+
+
 #include "gtMainSystemCommon.h"
 #include "gtMainSystemWin32.h"
 #include "gtLogerImpl.h"
+#include "gtWindowCommon.h"
+#include "gtWindowWin32.h"
+
 
 
 #endif
+
 /*
-Copyright (c) 2017
+Copyright (c) 2017 532235
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 

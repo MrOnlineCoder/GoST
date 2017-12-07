@@ -15,7 +15,7 @@ namespace gost{
 	GT_FORCE_INLINE void gtStackTrace::shutdown( void ){
 		if( m_is_initialized ){
 			if( !SymCleanup( GetCurrentProcess() ) )
-				m_log->print(gtLoger::level::warning, u"%s", u"Can not locate source line. Error code [%u]", GetLastError() );
+				m_log->print(gtLoger::level::warning, u"%s", u"Can not free memory. Error code [%u]", GetLastError() );
 		}
 	}
 

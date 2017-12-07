@@ -72,6 +72,36 @@
     <ClInclude Include="..\include\gtStackTrace.h">
       <Filter>gost</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\gtWindow.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtVector.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="gtWindowCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gtWindowWin32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtList.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtColor.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtFileSystem.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="gtFileSystemWin32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gtFileSystemCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gtFileWin32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -93,6 +123,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gtLogerImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtWindowCommon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtWindowWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtFileSystemWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtFileSystemCommon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtFileWin32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

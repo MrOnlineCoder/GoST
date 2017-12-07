@@ -10,6 +10,7 @@
 
 namespace gost{
 
+	
 
 	#if defined(_WIN32)
     #	define	GT_IMPORT __declspec(dllimport)

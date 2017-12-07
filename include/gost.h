@@ -9,9 +9,10 @@
 */
 
 //	C++
+//#include <cctype> //isalpha
 #include <fstream>
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 
 //	GOST 
@@ -21,13 +22,22 @@
 
 #include <gtError.h>
 
+#include <gtList.h>
+
+#include <gtVector.h>
+#include <gtColor.h>
+
 #include <gtBaseObject.h>
 #include <gtRefObject.h>
 #include <gtPtr.h>
 
+#include <gtWindow.h>
+
 #include <gtOutputWindow.h>
 
 #include <gtLoger.h>
+
+#include <gtFileSystem.h>
 
 #include <gtMainSystem.h>
 

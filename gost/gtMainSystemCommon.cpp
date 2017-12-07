@@ -4,9 +4,12 @@
 
 gtPtr<gtLogerImpl> gtMainSystemCommon::s_loger;
 gtMainSystemCommon*	gtMainSystemCommon::s_instance;
+gtFileSystemCommon* gtMainSystemCommon::s_fileSystem;
 
 gtMainSystemCommon::gtMainSystemCommon( void ) : m_isRun( true ),
-m_stackTracer( nullptr ){
+m_stackTracer( nullptr ), m_systemWindowCount( 0u ){
+	s_fileSystem = nullptr;
+
 	s_loger = gtPtrNew<gtLogerImpl>( new gtLogerImpl );
 	s_instance = this;
 }
@@ -15,6 +18,11 @@ gtMainSystemCommon::~gtMainSystemCommon(){
 	if( m_stackTracer ){
 		delete m_stackTracer;
 		m_stackTracer = nullptr;
+	}
+
+	if( s_fileSystem ){
+		delete  s_fileSystem;
+		s_fileSystem = nullptr;
 	}
 }
 

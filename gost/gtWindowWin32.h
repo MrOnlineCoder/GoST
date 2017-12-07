@@ -1,54 +1,43 @@
-п»ї//	GOST
+//	GOST
 
-/* 
-	Р—РґРµСЃСЊ Р±СѓРґСѓС‚ СЌРєСЃРїРѕСЂС‚РёСЂСѓРµРјС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ Р·Р°РїСѓСЃРєР° РґРІРёР¶РєР°
-*/
-#include "stdafx.h"
-
-#include <gost.h>
+#pragma once
+#ifndef __GT_WINDOW_WIN_32_H__
+#define __GT_WINDOW_WIN_32_H__
 
 namespace gost{
 
-GT_API gtMainSystem* InitializeGoSTEngine( const gtDeviceCreationParameters& params ){
 
-	gtMainSystem*	main_system( nullptr );
+	class gtWindowWin32 GT_FINAL : public gtWindowCommon{
+		
+			//	window handle
+		HWND m_hWnd;
 
-	switch( params.m_device_type ){
-#if defined( GT_PLATFORM_WIN32 )
-		case gtDeviceType::windows:{
-			main_system = new gtMainSystemWin32( params );
+			//	уникальное имя класса
+		gtString m_className;
+		
+			//	инициализировано ли окно
+		bool m_isInit;
 
-			if( !((gtMainSystemWin32*)main_system)->init() ){
-				
-				MessageBox( 0, L"Can not initialize GoST", L"Error", MB_OK | MB_ICONERROR );
+	public:
+			//	ctor
+		gtWindowWin32( const gtWindowInfo& );
 
-				delete main_system;
-			}
-			
-		}
-		break;
-#endif
-		case gtDeviceType::android:
-		case gtDeviceType::ios:
-		case gtDeviceType::linux:
-		case gtDeviceType::osx:
-		case gtDeviceType::playstation:
-		case gtDeviceType::wii:
-		case gtDeviceType::xbox:
-		default:
-			return nullptr;
-			break;
-	}
+			//	dtor
+		~gtWindowWin32( void );
+		
+		bool	init( u32 i );
 
-#ifdef GT_DEBUG
-	if( main_system )
-		main_system->setDebugName( u"MainSystem" );
-#endif
+			//	Установит заголовок окна
+		void	setWindowTitle( const gtString& ) GT_FINAL;
 
-	return main_system;
-}
+
+			//	оконная процедура
+		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	};
 
 }
+
+#endif
 
 /*
 Copyright (c) 2017 532235
