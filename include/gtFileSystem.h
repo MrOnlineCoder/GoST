@@ -72,6 +72,9 @@ namespace gost{
 			//	всё что в буффере запишется в файл
 		virtual void	flush( void ) = 0;
 
+			//	чтение
+		virtual void	read( u8 * data, u32 size ) = 0;
+
 			//	размер в байтах
 		virtual u32		size( void ) = 0;
 
@@ -238,6 +241,9 @@ namespace gost{
 			//	копирует существующий файл. true если успех
 		GT_API static bool copyFile( const gtString& existingFileName, const gtString& newFileName, bool overwrite );
 
+			//	возвращает путь к папке в которой лежит исполняемый файл программы
+			//	например "C:/Games/SuperGame/"
+		GT_API static gtString getProgramPath( void );
 
 	};
 
@@ -248,34 +254,25 @@ namespace gost{
 			Нужно будет дополнить для двоичных файлов.
 		*/
 
-		template<typename T>
-		gtPtrNew<gtFile> _openFileForReadText( const gtString& fileName ){
+		GT_FORCE_INLINE gtPtrNew<gtFile> openFileForReadText( const gtString& fileName ){
 			return gtFileSystem::createFile( fileName, gtFileSystem::FileMode::EFM_TEXT, gtFileSystem::FileAccessMode::EFAM_READ, 
 				gtFileSystem::FileAction::EFA_OPEN );
 		}
 		
-		template<typename T>
-		gtPtrNew<gtFile> _createFileForReadText( const gtString& fileName ){
+		GT_FORCE_INLINE gtPtrNew<gtFile> createFileForReadText( const gtString& fileName ){
 			return gtFileSystem::createFile( fileName, gtFileSystem::FileMode::EFM_TEXT, gtFileSystem::FileAccessMode::EFAM_READ, 
 				gtFileSystem::FileAction::EFA_OPEN_NEW );
 		}
 
-		template<typename T>
-		gtPtrNew<gtFile> _openFileForWriteText( const gtString& fileName ){
+		GT_FORCE_INLINE gtPtrNew<gtFile> openFileForWriteText( const gtString& fileName ){
 			return gtFileSystem::createFile( fileName, gtFileSystem::FileMode::EFM_TEXT, gtFileSystem::FileAccessMode::EFAM_APPEND, 
 				gtFileSystem::FileAction::EFA_OPEN );
 		}
 		
-		template<typename T>
-		gtPtrNew<gtFile> _createFileForWriteText( const gtString& fileName ){
+		GT_FORCE_INLINE	gtPtrNew<gtFile> createFileForWriteText( const gtString& fileName ){
 			return gtFileSystem::createFile( fileName, gtFileSystem::FileMode::EFM_TEXT, gtFileSystem::FileAccessMode::EFAM_WRITE,
 				gtFileSystem::FileAction::EFA_OPEN_NEW );
 		}
-
-		#define openFileForReadText _openFileForReadText<s8>
-		#define createFileForReadText _createFileForReadText<s8>
-		#define openFileForWriteText _openFileForWriteText<s8>
-		#define createFileForWriteText _createFileForWriteText<s8>
 
 	}
 

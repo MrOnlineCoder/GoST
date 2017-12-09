@@ -49,6 +49,10 @@ namespace gost{
 
 			//	копирует существующий файл. true если успех
 		virtual bool copyFile( const gtString& existingFileName, const gtString& newFileName, bool overwrite ) = 0;
+
+			//	возвращает путь к папке в которой лежит исполняемый файл программы
+			//	например "C:/Games/SuperGame/"
+		virtual gtString getProgramPath( void ) = 0;
 	};
 
 

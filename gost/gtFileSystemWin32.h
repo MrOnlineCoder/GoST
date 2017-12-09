@@ -19,6 +19,8 @@ namespace gost{
 
 		gtString m_dir;
 
+		gtString m_exePath;
+
 	public:
 
 		gtFileSystemWin32( void );
@@ -52,6 +54,10 @@ namespace gost{
 		bool getDirObject( gtFileSystem::DirObject* );
 			//	копирует существующий файл. true если успех
 		bool copyFile( const gtString& existingFileName, const gtString& newFileName, bool overwrite );
+
+			//	возвращает путь к папке в которой лежит исполняемый файл программы
+			//	например "C:/Games/SuperGame/"
+		gtString getProgramPath( void );
 	};
 
 }

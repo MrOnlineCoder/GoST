@@ -21,8 +21,6 @@
 #include <shlobj.h>
 #include <shlwapi.h>
 
-#undef CreateFile
-
 
 #define GT_EXPORTS
 
@@ -38,6 +36,7 @@ using namespace gost;
 #include "gtFileSystemCommon.h"
 #include "gtFileSystemWin32.h"
 
+#include "gtPluginSystemImpl.h"
 
 #include "gtMainSystemCommon.h"
 #include "gtMainSystemWin32.h"

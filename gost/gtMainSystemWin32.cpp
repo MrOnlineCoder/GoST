@@ -7,10 +7,13 @@ namespace gost{
 		//	конструктор
 	gtMainSystemWin32::gtMainSystemWin32( const gtDeviceCreationParameters& params ){
 		m_params = params;
+
+		this->s_fileSystem = nullptr;
 	}
 
 		//	деструктор
 	gtMainSystemWin32::~gtMainSystemWin32( void ){
+		
 	}
 
 		//	возвратит укозатель на окно вывода
@@ -40,6 +43,10 @@ namespace gost{
 
 			if( this->s_fileSystem->existFile( u"log.txt" ) )
 				this->s_fileSystem->deleteFile( u"log.txt" );
+
+			if( !this->m_pluginSystem->init() ){
+				return false;
+			}
 
 			gtLog->print(gtLoger::level::info, u"Starting GoST version %i.%i", 0, 1 );
 

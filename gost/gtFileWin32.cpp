@@ -86,6 +86,8 @@ m_pointerPosition( 0u )
 
 gtFileWin32::~gtFileWin32( void ){
 	if( m_handle ){
+		this->flush();
+
 		CloseHandle( m_handle );
 		m_handle = nullptr;
 	}
@@ -100,6 +102,9 @@ gtFile::TextFileInfo	gtFileWin32::getTextFileInfo( void ){
 
 //	дл€ двоичной записи
 void	gtFileWin32::write( u8 * data, u32 size ){
+
+	GT_ASSERT1( (m_desiredAccess & GENERIC_WRITE), "Can not write to file.", "File open in READ_ONLY mode" );
+
 	if( !m_handle ){
 		gtLogWriter::printWarning( u"Can not write text to file. m_handle == nullptr" );
 		return;
@@ -115,6 +120,7 @@ void	gtFileWin32::write( u8 * data, u32 size ){
 //	дл€ текста. –аботает если файл открыт в текстовом режиме.
 void	gtFileWin32::write( const gtStringA& string ){
 	GT_ASSERT1( m_isTextFile, "This file opened in binary mode", "m_isTextFile == true" );
+	GT_ASSERT1( (m_desiredAccess & FILE_APPEND_DATA), "Can not write to file.", "File open in binary mode" );
 	if( !m_handle ){
 		gtLogWriter::printWarning( u"Can not write text to file. m_handle == nullptr" );
 		return;
@@ -129,6 +135,7 @@ void	gtFileWin32::write( const gtStringA& string ){
 
 void	gtFileWin32::write( const gtString& string ){
 	GT_ASSERT1( m_isTextFile, "This file opened in binary mode", "m_isTextFile == true" );
+	GT_ASSERT1( (m_desiredAccess & FILE_APPEND_DATA), "Can not write to file.", "File open in binary mode" );
 	if( !m_handle ){
 		gtLogWriter::printWarning( u"Can not write text to file. m_handle == nullptr" );
 		return;
@@ -143,6 +150,7 @@ void	gtFileWin32::write( const gtString& string ){
 
 void	gtFileWin32::write( const gtString32& string ){
 	GT_ASSERT1( m_isTextFile, "This file opened in binary mode", "m_isTextFile == true" );
+	GT_ASSERT1( (m_desiredAccess & FILE_APPEND_DATA), "Can not write to file.", "File open in binary mode" );
 	if( !m_handle ){
 		gtLogWriter::printWarning( u"Can not write text to file. m_handle == nullptr" );
 		return;
@@ -158,6 +166,21 @@ void	gtFileWin32::write( const gtString32& string ){
 void	gtFileWin32::flush( void ){
 	if( m_handle ){
 		FlushFileBuffers( m_handle );
+	}
+}
+
+	//	чтение
+void	gtFileWin32::read( u8 * data, u32 size ){
+	GT_ASSERT1( (m_desiredAccess & GENERIC_READ), "Can not read from file.", "File open in WRITE_ONLY mode" );
+	if( m_handle ){
+		DWORD readBytesNum;
+		if( ReadFile(	m_handle,
+						data, size,
+						&readBytesNum,
+						NULL
+			) == FALSE ){
+			gtLogWriter::printWarning( u"Can not read file. Error code [%u]", GetLastError() );
+		}
 	}
 }
 

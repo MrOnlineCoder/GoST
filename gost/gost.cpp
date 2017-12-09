@@ -23,6 +23,7 @@ GT_API gtMainSystem* InitializeGoSTEngine( const gtDeviceCreationParameters& par
 				MessageBox( 0, L"Can not initialize GoST", L"Error", MB_OK | MB_ICONERROR );
 
 				delete main_system;
+				main_system = nullptr;
 			}
 			
 		}

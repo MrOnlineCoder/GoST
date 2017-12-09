@@ -1,12 +1,20 @@
-//	GOST
+Ôªø//	GOST
 
 #include "stdafx.h"
 
 
 gtFileSystemWin32::gtFileSystemWin32( void ):
-	m_dirScanBegin( false ), hFind( nullptr ),
+	m_dirScanBegin( false ),
+	hFind( nullptr ),
 	m_firstCall( false )
-{}
+{
+	TCHAR szFileName[MAX_PATH];
+	GetModuleFileName( NULL, szFileName, MAX_PATH );
+	m_exePath.assign( (char16_t*)szFileName );
+	
+	util::stringFlipSlash<gtString>( m_exePath );
+	util::stringPopBackBefore<gtString>( m_exePath, '/' );
+}
 
 
 gtFileSystemWin32::~gtFileSystemWin32( void ){
@@ -19,7 +27,6 @@ gtFile* gtFileSystemWin32::createFile( const gtString& fileName,
 			gtFileSystem::FileShareMode EFSM,
 			u32 EFA
 		){
-
 	return new gtFileWin32( fileName, mode, access, action, EFSM, EFA );
 }
 
@@ -63,7 +70,7 @@ bool gtFileSystemWin32::deleteDir( const gtString& dir ){
 bool gtFileSystemWin32::createDir( const gtString& dir ){
 	if( CreateDirectory( (wchar_t*)dir.data(), NULL ) == FALSE ){
 		DWORD error = GetLastError();
-		gtLogWriter::printWarning( u"Can not remove directory [%s]. Error code [%u]", 
+		gtLogWriter::printWarning( u"Can not create directory [%s]. Error code [%u]", 
 			dir.data(), error );
 		if( error == ERROR_ALREADY_EXISTS )
 			gtLogWriter::printWarning( u"Directory already exists." );
@@ -74,7 +81,7 @@ bool gtFileSystemWin32::createDir( const gtString& dir ){
 	return true;
 }
 
-	//	ÔÂÂ‰ ÒÍ‡ÌËÓ‚‡ÌËÂÏ Ô‡ÔÍË ÌÛÊÌÓ ‚˚Á‚‡Ú¸ ˝ÚÓ
+	//	–ø–µ—Ä–µ–¥ —Å–∫–∞–Ω–∏—Ä–æ–≤–∞–Ω–∏–µ–º –ø–∞–ø–∫–∏ –Ω—É–∂–Ω–æ –≤—ã–∑–≤–∞—Ç—å —ç—Ç–æ
 void gtFileSystemWin32::scanDirBegin( const gtString& dir ){
 	if( !m_dirScanBegin ){
 		m_dirScanBegin = true;
@@ -87,7 +94,7 @@ void gtFileSystemWin32::scanDirBegin( const gtString& dir ){
 
 	}
 }
-	//	ÔÓÒÎÂ Á‡‚Â¯ÂÌËˇ ÒÍ‡ÌËÓ‚‡ÌËˇ ÌÛÊÌÓ ‚˚Á‚‡Ú¸ ˝ÚÓ
+	//	–ø–æ—Å–ª–µ –∑–∞–≤–µ—Ä—à–µ–Ω–∏—è —Å–∫–∞–Ω–∏—Ä–æ–≤–∞–Ω–∏—è –Ω—É–∂–Ω–æ –≤—ã–∑–≤–∞—Ç—å —ç—Ç–æ
 void gtFileSystemWin32::scanDirEnd( void ){
 	if( m_dirScanBegin ){
 		m_dirScanBegin = false;
@@ -99,8 +106,8 @@ void gtFileSystemWin32::scanDirEnd( void ){
 	}
 }
 
-	//	Á‡ÔÓÎÌËÚ ÒÚÛÍÚÛÛ DirObject ÂÒÎË ÂÒÚ¸ Ù‡ÈÎ/Ô‡ÔÍ‡
-	//	ÂÒÎË, Ù‡ÈÎ‡/Ô‡ÔÍË ÌÂÚ, ËÎË ÒÍ‡ÌËÓ‚‡ÌËÂ Ô‡ÔÍË Á‡‚Â¯ÂÌÓ - ‚ÓÁ‚‡Ú false
+	//	–∑–∞–ø–æ–ª–Ω–∏—Ç —Å—Ç—Ä—É–∫—Ç—É—Ä—É DirObject –µ—Å–ª–∏ –µ—Å—Ç—å —Ñ–∞–π–ª/–ø–∞–ø–∫–∞
+	//	–µ—Å–ª–∏, —Ñ–∞–π–ª–∞/–ø–∞–ø–∫–∏ –Ω–µ—Ç, –∏–ª–∏ —Å–∫–∞–Ω–∏—Ä–æ–≤–∞–Ω–∏–µ –ø–∞–ø–∫–∏ –∑–∞–≤–µ—Ä—à–µ–Ω–æ - –≤–æ–∑–≤—Ä–∞—Ç false
 bool gtFileSystemWin32::getDirObject( gtFileSystem::DirObject* o ){
 	WIN32_FIND_DATA ffd;
 
@@ -152,7 +159,7 @@ bool gtFileSystemWin32::getDirObject( gtFileSystem::DirObject* o ){
 	return true;
 }
 
-	//	ÍÓÔËÛÂÚ ÒÛ˘ÂÒÚ‚Û˛˘ËÈ Ù‡ÈÎ. true ÂÒÎË ÛÒÔÂı
+	//	–∫–æ–ø–∏—Ä—É–µ—Ç —Å—É—â–µ—Å—Ç–≤—É—é—â–∏–π —Ñ–∞–π–ª. true –µ—Å–ª–∏ —É—Å–ø–µ—Ö
 bool gtFileSystemWin32::copyFile( const gtString& existingFileName, const gtString& newFileName, bool overwrite ){
 	if( !this->existFile( existingFileName ) ){
 		gtLogWriter::printWarning( u"Can not copy file [%s]. File not exist.", existingFileName.data() );
@@ -166,7 +173,6 @@ bool gtFileSystemWin32::copyFile( const gtString& existingFileName, const gtStri
 					(LPWCH)newFileName.data(),
 					NULL, NULL, NULL, flag )
 		== FALSE ){
-
 		gtLogWriter::printWarning( u"Can not copy file [%s]. Error code [%u].", existingFileName.data(), GetLastError() );
 		return false;
 	}
@@ -174,6 +180,11 @@ bool gtFileSystemWin32::copyFile( const gtString& existingFileName, const gtStri
 	return true;
 }
 
+	//	–≤–æ–∑–≤—Ä–∞—â–∞–µ—Ç –ø—É—Ç—å –∫ –ø–∞–ø–∫–µ –≤ –∫–æ—Ç–æ—Ä–æ–π –ª–µ–∂–∏—Ç –∏—Å–ø–æ–ª–Ω—è–µ–º—ã–π —Ñ–∞–π–ª –ø—Ä–æ–≥—Ä–∞–º–º—ã
+	//	–Ω–∞–ø—Ä–∏–º–µ—Ä "C:/Games/SuperGame/"
+gtString gtFileSystemWin32::getProgramPath( void ){
+	return m_exePath;
+}
 
 /*
 Copyright (c) 2017 532235

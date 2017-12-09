@@ -159,10 +159,12 @@
     <ClInclude Include="..\include\gtLoger.h" />
     <ClInclude Include="..\include\gtMainSystem.h" />
     <ClInclude Include="..\include\gtOutputWindow.h" />
+    <ClInclude Include="..\include\gtPluginSystem.h" />
     <ClInclude Include="..\include\gtPtr.h" />
     <ClInclude Include="..\include\gtRefObject.h" />
     <ClInclude Include="..\include\gtStackTrace.h" />
     <ClInclude Include="..\include\gtTypes.h" />
+    <ClInclude Include="..\include\gtUtilities.h" />
     <ClInclude Include="..\include\gtVector.h" />
     <ClInclude Include="..\include\gtWindow.h" />
     <ClInclude Include="gtFileSystemCommon.h" />
@@ -172,6 +174,7 @@
     <ClInclude Include="gtMainSystemCommon.h" />
     <ClInclude Include="gtMainSystemWin32.h" />
     <ClInclude Include="gtOutputWindowWin32.h" />
+    <ClInclude Include="gtPluginSystemImpl.h" />
     <ClInclude Include="gtWindowCommon.h" />
     <ClInclude Include="gtWindowWin32.h" />
     <ClInclude Include="stdafx.h" />
@@ -200,6 +203,7 @@
     <ClCompile Include="gtMainSystemCommon.cpp" />
     <ClCompile Include="gtMainSystemWin32.cpp" />
     <ClCompile Include="gtOutputWindowWin32.cpp" />
+    <ClCompile Include="gtPluginSystemImpl.cpp" />
     <ClCompile Include="gtWindowCommon.cpp" />
     <ClCompile Include="gtWindowWin32.cpp" />
     <ClCompile Include="stdafx.cpp">
