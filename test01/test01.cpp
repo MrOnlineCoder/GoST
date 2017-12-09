@@ -22,7 +22,10 @@ class myOutput : public gtOutputWindow {
 public:
 
 	myOutput( void ) : m_hWnd( 0 ), m_isInit( false ){
+#ifdef GT_DEBUG
 		this->setDebugName( u"OutputWindow" );
+#endif
+
 	}
 
 
@@ -93,11 +96,11 @@ void ScanDirs( gtString dir, bool subDir ){
 		if( o->type == gtFileSystem::DirObjectType::info ) 
 			continue;
 
-		gtLogWriter::printInfo( 
+	/*	gtLogWriter::printInfo( 
 			u"%s - %s - %u bytes", 
 			o->type == gtFileSystem::DirObjectType::folder
 				? u"Dir" : u"File",
-			o->path, o->size );
+			o->path, o->size );*/
 
 		if( o->type == gtFileSystem::DirObjectType::folder ){
 			if( subDir ){
@@ -113,21 +116,25 @@ void ScanDirs( gtString dir, bool subDir ){
 #include <Windows.h>
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ){
 #endif
+
+	
 		
 	gtDeviceCreationParameters params;
 
 
-	myOutput * output = new myOutput;
+	gtPtr<myOutput> output = gtPtrNew<myOutput>( new myOutput );
+	output->init();
+	output->setWindowText( u"Output" );
 
 //#define O1
 #ifdef O1
-	output->init();
-	output->setWindowText( u"Output" );
+	
 	params.m_outputWindow = output;
 #endif
 
 	gtPtr<gtMainSystem> my_system( gtPtrNew<gtMainSystem>( InitializeGoSTEngine(params) ) );
-
+	
+	if( !my_system.data() ) return 1;
 		
 	gtWindowInfo wi;
 	
@@ -156,6 +163,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	gtFileSystem::scanDirEnd();*/
 	ScanDirs( u"D:\\GOST\\gost\\", true );
 
+
 //	gtFileSystem::copyFile( u"consola.ttf", u"consola_copy.ttf", false );
 	{
 		gtFile_t f = gtFileSystem::createFile(
@@ -165,7 +173,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 					gtFileSystem::FileAction::EFA_OPEN );
 		gtLogWriter::printInfo( u"File size [%u]", f->size() );
 	}
-
+	 
 
 	{// тест seek и tell
 		gtFile_t f = gtFileSystem::createFile(
@@ -190,6 +198,8 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		f->write( reinterpret_cast<u8*>(&i), sizeof(s32) );
 		gtLogWriter::printInfo( u"File cur pos [%u]", f->tell() );
 	}
+
+	gtLogWriter::printInfo( u"Program dir [%s]", gtFileSystem::getProgramPath().data() );
 
 	while( my_system->update() ){
 

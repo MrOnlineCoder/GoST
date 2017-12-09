@@ -14,11 +14,14 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <typeinfo>
 
 //	GOST 
 #include <gtInfo.h>
 #include <gtTypes.h>
 
+
+#include <gtUtilities.h>
 
 #include <gtError.h>
 
@@ -30,6 +33,8 @@
 #include <gtBaseObject.h>
 #include <gtRefObject.h>
 #include <gtPtr.h>
+
+#include <gtPluginSystem.h>
 
 #include <gtWindow.h>
 

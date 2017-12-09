@@ -12,6 +12,8 @@ m_stackTracer( nullptr ), m_systemWindowCount( 0u ){
 
 	s_loger = gtPtrNew<gtLogerImpl>( new gtLogerImpl );
 	s_instance = this;
+
+	m_pluginSystem = gtPtrNew<gtPluginSystemImpl>( new gtPluginSystemImpl );
 }
 
 gtMainSystemCommon::~gtMainSystemCommon(){

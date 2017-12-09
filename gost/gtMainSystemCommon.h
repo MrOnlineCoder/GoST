@@ -33,6 +33,8 @@ namespace gost{
 
 		u32 m_systemWindowCount;
 
+		gtPtr< gtPluginSystemImpl > m_pluginSystem;
+
 	public:
 
 			///	конструктор

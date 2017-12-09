@@ -1,4 +1,4 @@
-//	GOST
+ï»¿//	GOST
 
 
 #include "stdafx.h"
@@ -28,7 +28,7 @@ bool gtFileSystem::existFile( const gtString& fileName ){
 	return gtMainSystemCommon::s_fileSystem->existFile( fileName );
 }
 
-	//	true åñëè ïàïêà äîñòóïíà
+	//	true ÐµÑÐ»Ð¸ Ð¿Ð°Ð¿ÐºÐ° Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°
 bool gtFileSystem::existDir( const gtString& dir ){
 	return gtMainSystemCommon::s_fileSystem->existDir( dir );
 }
@@ -37,30 +37,36 @@ bool gtFileSystem::createDir( const gtString& dir ){
 	return gtMainSystemCommon::s_fileSystem->createDir( dir );
 }
 
-//	//	ïîëó÷èòü êîëè÷åñòâî îáúåêòîâ â óêàçàííîé ïàïêå
+//	//	Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² Ð² ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ð¹ Ð¿Ð°Ð¿ÐºÐµ
 //u32 gtFileSystem::getDirItemsCount( const gtString& dir ){
 //	return gtMainSystemCommon::s_fileSystem->getDirItemsCount( dir );
 //}
 
-	//	ïåðåä ñêàíèðîâàíèåì ïàïêè íóæíî âûçâàòü ýòî
+	//	Ð¿ÐµÑ€ÐµÐ´ ÑÐºÐ°Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸ÐµÐ¼ Ð¿Ð°Ð¿ÐºÐ¸ Ð½ÑƒÐ¶Ð½Ð¾ Ð²Ñ‹Ð·Ð²Ð°Ñ‚ÑŒ ÑÑ‚Ð¾
 void gtFileSystem::scanDirBegin( const gtString& dir ){
 	gtMainSystemCommon::s_fileSystem->scanDirBegin( dir );
 }
 			
-	//	ïîñëå çàâåðøåíèÿ ñêàíèðîâàíèÿ íóæíî âûçâàòü ýòî
+	//	Ð¿Ð¾ÑÐ»Ðµ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¸Ñ ÑÐºÐ°Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ Ð½ÑƒÐ¶Ð½Ð¾ Ð²Ñ‹Ð·Ð²Ð°Ñ‚ÑŒ ÑÑ‚Ð¾
 void gtFileSystem::scanDirEnd( void ){
 	gtMainSystemCommon::s_fileSystem->scanDirEnd();
 }
 
-	//	çàïîëíèò ñòðóêòóðó DirObject åñëè åñòü ôàéë/ïàïêà
-	//	åñëè, ôàéëà/ïàïêè íåò, èëè ñêàíèðîâàíèå ïàïêè çàâåðøåíî - âîçâðàò false
+	//	Ð·Ð°Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ ÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ñƒ DirObject ÐµÑÐ»Ð¸ ÐµÑÑ‚ÑŒ Ñ„Ð°Ð¹Ð»/Ð¿Ð°Ð¿ÐºÐ°
+	//	ÐµÑÐ»Ð¸, Ñ„Ð°Ð¹Ð»Ð°/Ð¿Ð°Ð¿ÐºÐ¸ Ð½ÐµÑ‚, Ð¸Ð»Ð¸ ÑÐºÐ°Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¿Ð°Ð¿ÐºÐ¸ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾ - Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‚ false
 bool gtFileSystem::getDirObject( gtFileSystem::DirObject* o ){
 	return gtMainSystemCommon::s_fileSystem->getDirObject( o );
 }
 
-	//	êîïèðóåò ñóùåñòâóþùèé ôàéë. true åñëè óñïåõ
+	//	ÐºÐ¾Ð¿Ð¸Ñ€ÑƒÐµÑ‚ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ð¹ Ñ„Ð°Ð¹Ð». true ÐµÑÐ»Ð¸ ÑƒÑÐ¿ÐµÑ…
 bool gtFileSystem::copyFile( const gtString& existingFileName, const gtString& newFileName, bool overwrite ){
 	return gtMainSystemCommon::s_fileSystem->copyFile( existingFileName, newFileName, overwrite );
+}
+
+	//	Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¿ÑƒÑ‚ÑŒ Ðº Ð¿Ð°Ð¿ÐºÐµ Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð»ÐµÐ¶Ð¸Ñ‚ Ð¸ÑÐ¿Ð¾Ð»Ð½ÑÐµÐ¼Ñ‹Ð¹ Ñ„Ð°Ð¹Ð» Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹
+	//	Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€ "C:/Games/SuperGame/"
+gtString gtFileSystem::getProgramPath( void ){
+		return gtMainSystemCommon::s_fileSystem->getProgramPath();
 }
 
 /*

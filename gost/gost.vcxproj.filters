@@ -102,6 +102,15 @@
     <ClInclude Include="gtFileWin32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\gtUtilities.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtPluginSystem.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="gtPluginSystemImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -138,6 +147,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gtFileWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtPluginSystemImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

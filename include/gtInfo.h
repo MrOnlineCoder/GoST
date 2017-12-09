@@ -293,6 +293,18 @@ namespace gost{
 	#	define GT_FINAL 
 	#	define GT_FINAL_OVERRIDE
 	#endif
+
+	#if defined(GT_PLATFORM_WIN32)
+	#	define GT_LIBRARY_HANDLE HMODULE
+	#	define GT_LOAD_LIBRARY(x) LoadLibrary(x)
+	#	define GT_LOAD_FUNCTION GetProcAddress
+	#	define GT_FREE_LIBRARY FreeLibrary
+	#elif GT_PLATFORM_LINUX
+	#	define GT_LIBRARY_HANDLE void*
+	#	define GT_LOAD_LIBRARY(x) dlopen(x,(RTLD_NOW|RTLD_GLOBAL))
+	#	define GT_LOAD_FUNCTION dlsym
+	#	define GT_FREE_LIBRARY dlclose
+	#endif
 }
 
 
