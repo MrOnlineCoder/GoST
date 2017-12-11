@@ -7,7 +7,9 @@ gtMainSystemCommon*	gtMainSystemCommon::s_instance;
 gtFileSystemCommon* gtMainSystemCommon::s_fileSystem;
 
 gtMainSystemCommon::gtMainSystemCommon( void ) : m_isRun( true ),
-m_stackTracer( nullptr ), m_systemWindowCount( 0u ){
+	m_stackTracer( nullptr ), 
+	m_systemWindowCount( 0u )
+{
 	s_fileSystem = nullptr;
 
 	s_loger = gtPtrNew<gtLogerImpl>( new gtLogerImpl );
@@ -20,11 +22,6 @@ gtMainSystemCommon::~gtMainSystemCommon(){
 	if( m_stackTracer ){
 		delete m_stackTracer;
 		m_stackTracer = nullptr;
-	}
-
-	if( s_fileSystem ){
-		delete  s_fileSystem;
-		s_fileSystem = nullptr;
 	}
 }
 
@@ -39,22 +36,32 @@ void gtMainSystemCommon::initStackTracer( void ){
 	}
 }
 
-	///	возвратит указатель на gtMainSystem
-	///	альтернатива this так как this не работает в статических методах
+	//	возвратит указатель на gtMainSystem
+	//	альтернатива this так как this не работает в статических методах
 gtMainSystemCommon*	gtMainSystemCommon::getInstance( void ){
 	return s_instance;
 }
 			
-	///	возвратит StackTracer
+	//	возвратит StackTracer
 gtStackTrace*	gtMainSystemCommon::getStackTracer( void ){
 	return m_stackTracer;
 }
 
-	///	gtStackTrace::dumpStackTrace
+	//	gtStackTrace::dumpStackTrace
 void gtStackTrace::dumpStackTrace( void ){
 	gtMainSystemCommon::getInstance()->getStackTracer()->printStackTrace(2u,3u);
 }
 
+	//	Инициализирует видео драйвер
+gtDriver* gtMainSystemCommon::createVideoDriver( const gtDriverInfo& params ){
+	return m_pluginSystem->loadRenderPlugin( params );
+}
+
+	//	Завершает работу видео драйвера
+void gtMainSystemCommon::removeVideoDriver( gtDriver** pDriver ){
+	m_pluginSystem->unloadRenderPlugin( *pDriver );
+	*pDriver = nullptr;
+}
 
 /*
 Copyright (c) 2017 532235

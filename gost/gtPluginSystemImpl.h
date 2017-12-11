@@ -6,20 +6,96 @@
 
 namespace gost{
 
-	class gtPluginSystemImpl : public gtPluginSystem{
+	/*	Информация о плагине. Содержит путь к файлу
+		указатель на фукнцию запуска,
+		хэндл,
+		так же общая информация gtPluginInfo*/
+	struct gtPluginInfoDL{
+
+		gtPluginInfoDL( void ):
+			m_loadPlugin( nullptr ),
+			m_handle( nullptr )
+		{}
+
+		~gtPluginInfoDL( void ){}
+
+		//	путь к файлу
+		gtString m_path;
+
+		//	указатель на функцию записи
+		void (*m_loadPlugin)();
+		
+		//	handle плагина
+		GT_LIBRARY_HANDLE m_handle;
+
+		//	общая информация
+		gtPluginInfo m_info;
+	};
+
+	/*
+		Это обёртка к render плагину.
+		Хранит информацию.
+		Благодоря этому можно грузить и выгружать плагин 
+		используя методы load unload
+	*/
+	class gtPluginRender : public gtRefObject{
+
+			//	загружен ли плагин
+		bool m_isLoad;
+
+			//	информация
+		gtPluginInfoDL	m_info;
+
+	public:
+
+		gtPluginRender( gtPluginInfoDL* info ):
+			m_isLoad( false )
+		{
+			m_info = *info;
+		}
+
+		~gtPluginRender( void ){
+			unload();
+		}
+
+			//	видео драйвер
+		gtPtr<gtDriver> m_driver;
+
+			//	загрузить плагин
+		void load( const gtDriverInfo& params );
+
+			//	выгрузитьплагин
+		void unload( void );
+
+	};
+
+	class gtPluginSystemImpl GT_FINAL : public gtPluginSystem{
 
 		void scanFolder( const gtString& );
 
 		u32 m_numOfPlugins;
+
+		//	доступные для загрузки
+		gtArray<gtPluginInfoDL> m_renderPluginCache;
+		
+		//	загруженные плагины
+		gtList<gtPluginRender*>	m_renderPlugins;
+
 	public:
-		gtPluginSystemImpl();
-		~gtPluginSystemImpl();
+		gtPluginSystemImpl( void );
+		virtual ~gtPluginSystemImpl( void );
 
 		bool init( void );
 
-
 			//	получить количество плагинов в папке plugins
 		u32	getNumOfPlugins( void );
+
+			//	загружает видео плагин
+		gtDriver*	loadRenderPlugin( const gtDriverInfo& params );
+
+			//	выгружает и удаляет из коллекции
+		void 		unloadRenderPlugin( gtDriver* );
+
 	};
 
 }

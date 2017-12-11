@@ -34,6 +34,8 @@
 #include <gtRefObject.h>
 #include <gtPtr.h>
 
+#include <gtDriver.h>
+
 #include <gtPluginSystem.h>
 
 #include <gtWindow.h>

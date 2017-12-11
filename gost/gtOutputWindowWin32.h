@@ -38,7 +38,7 @@ namespace gost{
 		gtOutputWindowWin32( void );
 
 		//	Деструктор
-		~gtOutputWindowWin32( void );
+		virtual ~gtOutputWindowWin32( void );
 
 		//	Инициализация
 		void	init( void ) GT_FINAL;	//	по сути если класс объявлен как final то нет смысла писать его для методов. ну да ладно, буду говнокодить

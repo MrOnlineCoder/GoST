@@ -39,9 +39,10 @@ constexpr u32 gtMaxStackFrames = 1024u;
 		gtStackTrace( gtMainSystem* s ) : m_is_initialized( false ){
 			m_log = gtPtrNew<gtLoger>( s->getLoger() );
 			m_log->setOutputWindow( s->getOutputWindow() );
+			m_log->addRef();
 		}
 			//	dtor
-		~gtStackTrace( void ){
+		virtual ~gtStackTrace( void ){
 		}
 
 			//	skip_begin	- пропуск с начала

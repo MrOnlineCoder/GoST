@@ -111,6 +111,12 @@
     <ClInclude Include="gtPluginSystemImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\gtDriver.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="gtDriverCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -150,6 +156,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gtPluginSystemImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtDriverCommon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

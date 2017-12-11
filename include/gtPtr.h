@@ -102,6 +102,10 @@ namespace gost{
 		Type* data( void ) const {
 			return m_pointer;
 		}
+
+		bool	operator==( const gtPtr& v ){
+			return m_pointer == v.m_pointer;
+		}
 	
 	};
 

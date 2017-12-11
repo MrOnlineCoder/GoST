@@ -13,7 +13,10 @@ namespace gost{
 
 		//	деструктор
 	gtMainSystemWin32::~gtMainSystemWin32( void ){
-		
+		if( s_fileSystem ){
+			delete  s_fileSystem;
+			s_fileSystem = nullptr;
+		}
 	}
 
 		//	возвратит укозатель на окно вывода
@@ -44,11 +47,12 @@ namespace gost{
 			if( this->s_fileSystem->existFile( u"log.txt" ) )
 				this->s_fileSystem->deleteFile( u"log.txt" );
 
+			gtLog->print(gtLoger::level::info, u"Starting GoST version %i.%i", 0, 1 );
+
 			if( !this->m_pluginSystem->init() ){
 				return false;
 			}
 
-			gtLog->print(gtLoger::level::info, u"Starting GoST version %i.%i", 0, 1 );
 
 		}
 		

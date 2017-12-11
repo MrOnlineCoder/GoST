@@ -23,7 +23,7 @@ namespace gost{
 		gtLogerImpl( void );
 
 			///	деструктор
-		~gtLogerImpl( void );
+		virtual ~gtLogerImpl( void );
 
 			///	напечатает форматированную строку
 			///	%f - float

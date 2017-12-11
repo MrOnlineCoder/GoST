@@ -38,7 +38,7 @@ namespace gost{
 		//virtual u32 getDirItemsCount( const gtString& dir ) = 0;
 
 			//	перед сканированием папки нужно вызвать это
-		virtual void scanDirBegin( const gtString& dir ) = 0;
+		virtual void scanDirBegin( gtString dir ) = 0;
 			
 			//	после завершения сканирования нужно вызвать это
 		virtual void scanDirEnd( void ) = 0;
@@ -53,6 +53,9 @@ namespace gost{
 			//	возвращает путь к папке в которой лежит исполняемый файл программы
 			//	например "C:/Games/SuperGame/"
 		virtual gtString getProgramPath( void ) = 0;
+
+			//	возвращает путь к системной папке
+		virtual gtString getSystemPath( void ) = 0;
 	};
 
 

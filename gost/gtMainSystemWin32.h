@@ -27,7 +27,7 @@ namespace gost{
 		gtMainSystemWin32( const gtDeviceCreationParameters& );
 
 			//	деструктор
-		~gtMainSystemWin32( void );
+		virtual ~gtMainSystemWin32( void );
 
 
 			//	инициализация в отдельном методе чтобы не занимались проблемами внутри конструктора

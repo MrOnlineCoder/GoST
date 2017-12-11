@@ -33,7 +33,7 @@ namespace gost{
 
 		u32 m_systemWindowCount;
 
-		gtPtr< gtPluginSystemImpl > m_pluginSystem;
+		gtPtr<gtPluginSystemImpl> m_pluginSystem;
 
 	public:
 
@@ -62,6 +62,11 @@ namespace gost{
 			///	возвратит StackTracer
 		gtStackTrace*	getStackTracer( void );
 
+			//	Инициализирует видео драйвер
+		gtDriver* createVideoDriver( const gtDriverInfo& );
+
+			//	Завершает работу видео драйвера
+		void		removeVideoDriver( gtDriver** );
 	};
 
 #define gtLog gtMainSystemCommon::s_loger
