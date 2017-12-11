@@ -23,13 +23,13 @@ namespace gost{
 		gtWindowWin32( const gtWindowInfo& );
 
 			//	dtor
-		~gtWindowWin32( void );
+		virtual ~gtWindowWin32( void );
 		
 		bool	init( u32 i );
 
 			//	Установит заголовок окна
 		void	setWindowTitle( const gtString& ) GT_FINAL;
-
+		void*	getHandle( void ) GT_FINAL;
 
 			//	оконная процедура
 		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

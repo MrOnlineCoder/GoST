@@ -116,21 +116,10 @@ void ScanDirs( gtString dir, bool subDir ){
 #include <Windows.h>
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ){
 #endif
-
+	 
 	
 		
 	gtDeviceCreationParameters params;
-
-
-	gtPtr<myOutput> output = gtPtrNew<myOutput>( new myOutput );
-	output->init();
-	output->setWindowText( u"Output" );
-
-//#define O1
-#ifdef O1
-	
-	params.m_outputWindow = output;
-#endif
 
 	gtPtr<gtMainSystem> my_system( gtPtrNew<gtMainSystem>( InitializeGoSTEngine(params) ) );
 	
@@ -138,76 +127,47 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		
 	gtWindowInfo wi;
 	
-	gtPtr< gtWindow > window;
+	gtPtr< gtWindow > window1, window2, window3;
 
 	wi.m_style = gtWindowInfo::_standart;
 	wi.m_style |= gtWindowInfo::_maximize;
 	wi.m_style |= gtWindowInfo::_resize;
 
-	window = gtPtrNew<gtWindow>( my_system->createSystemWindow( wi ) );
+	window1 = gtPtrNew<gtWindow>( my_system->createSystemWindow( wi ) );
+	window2 = gtPtrNew<gtWindow>( my_system->createSystemWindow( wi ) );
+	window3 = gtPtrNew<gtWindow>( my_system->createSystemWindow( wi ) );
 
-
-	////	СКАНИРОВАНИЕ ПАПКИ
-	/*gtFileSystem::scanDirBegin( u"D:\\GOST\\gost\\" );
-	
-	gtFileSystem::DirObject dirObj;
-
-	while( gtFileSystem::getDirObject( &dirObj ) ){
 		
-		if( dirObj.type == gtFileSystem::DirObjectType::info ) continue;
+	gtDriverInfo vparams;
+	vparams.m_GUID = GT_GUID_RENDER_D3D11;
+	
+	vparams.m_outWindow = window1.data();
+	gtDriver* driver1 = my_system->createVideoDriver( vparams );
 
-		gtLogWriter::printInfo( u"%s - %s - %u bytes", dirObj.type == gtFileSystem::DirObjectType::folder ? u"Dir" : u"File",
-			dirObj.path, dirObj.size );
-	}
+	vparams.m_outWindow = window2.data();
+	gtDriver* driver2 = my_system->createVideoDriver( vparams );
 
-	gtFileSystem::scanDirEnd();*/
-	ScanDirs( u"D:\\GOST\\gost\\", true );
-
-
-//	gtFileSystem::copyFile( u"consola.ttf", u"consola_copy.ttf", false );
-	{
-		gtFile_t f = gtFileSystem::createFile(
-					u"gost_d.dll",
-					gtFileSystem::FileMode::EFM_BINARY,
-					gtFileSystem::FileAccessMode::EFAM_READ,
-					gtFileSystem::FileAction::EFA_OPEN );
-		gtLogWriter::printInfo( u"File size [%u]", f->size() );
-	}
-	 
-
-	{// тест seek и tell
-		gtFile_t f = gtFileSystem::createFile(
-					u"out.bin",
-					gtFileSystem::FileMode::EFM_BINARY,
-					gtFileSystem::FileAccessMode::EFAM_WRITE,
-					gtFileSystem::FileAction::EFA_OPEN_NEW );
-		gtLogWriter::printInfo( u"File cur pos [%u]", f->tell() );
-
-		s32 i = 0xFFFFFFFF;
-		f->write( reinterpret_cast<u8*>(&i), sizeof(s32) );
-
-		gtLogWriter::printInfo( u"File cur pos [%u]", f->tell() );
-
-		i = 0xAAAAAAAA;
-		f->write( reinterpret_cast<u8*>(&i), sizeof(s32) );
-		gtLogWriter::printInfo( u"File cur pos [%u]", f->tell() );
-
-		f->seek( 2u, gtFile::SeekPos::ESP_BEGIN );
-
-		i = 0x44444444;
-		f->write( reinterpret_cast<u8*>(&i), sizeof(s32) );
-		gtLogWriter::printInfo( u"File cur pos [%u]", f->tell() );
-	}
-
-	gtLogWriter::printInfo( u"Program dir [%s]", gtFileSystem::getProgramPath().data() );
+	vparams.m_outWindow = window3.data();
+	gtDriver* driver3 = my_system->createVideoDriver( vparams );
 
 	while( my_system->update() ){
 
+		if( driver1 ){
+			driver1->beginRender(true,gtColor(1.f,0.f,0.f,1.f));
+			driver1->endRender();
+		}
+
+		if( driver2 ){
+			driver2->beginRender(true,gtColor(0.f,0.f,1.f,1.f));
+			driver2->endRender();
+		}
+
+		if( driver3 ){
+			driver3->beginRender(true,gtColor(0.f,1.f,0.f,1.f));
+			driver3->endRender();
+		}
+
 	}
-
-	output->shutdown();
-	output->release();
-
 
     return 0;
 }

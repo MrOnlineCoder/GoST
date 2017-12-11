@@ -96,6 +96,10 @@ void	gtWindowWin32::setWindowTitle( const gtString& title ){
 	}
 }
 
+void*	gtWindowWin32::getHandle( void ){
+	return (void*)m_hWnd;
+}
+
 LRESULT CALLBACK gtWindowWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
@@ -141,10 +145,9 @@ LRESULT CALLBACK gtWindowWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, 
 	case WM_DESTROY:
 		PostQuitMessage( 0 );
 		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
-	return 0;
+
+	return DefWindowProc( hWnd, message, wParam, lParam );
 }
 
 /*

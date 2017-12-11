@@ -14,10 +14,20 @@ gtFileSystemWin32::gtFileSystemWin32( void ):
 	
 	util::stringFlipSlash<gtString>( m_exePath );
 	util::stringPopBackBefore<gtString>( m_exePath, '/' );
+
+
+
+	GetSystemDirectory( szFileName, MAX_PATH );
+	m_systemPath.assign( (char16_t*)szFileName );
+	m_systemPath += u"/";
+	util::stringFlipSlash<gtString>( m_systemPath );
+
 }
 
 
 gtFileSystemWin32::~gtFileSystemWin32( void ){
+	if( hFind )
+		CloseHandle( hFind );
 }
 
 gtFile* gtFileSystemWin32::createFile( const gtString& fileName, 
@@ -82,15 +92,17 @@ bool gtFileSystemWin32::createDir( const gtString& dir ){
 }
 
 	//	перед сканированием папки нужно вызвать это
-void gtFileSystemWin32::scanDirBegin( const gtString& dir ){
+void gtFileSystemWin32::scanDirBegin( gtString dir ){
 	if( !m_dirScanBegin ){
 		m_dirScanBegin = true;
-	
+		
+		m_dir.clear();
+
 		m_dir = dir;
-		if( m_dir[ m_dir.size() - 1u ] != u'/'
-			&& m_dir[ m_dir.size() - 1u ] != u'\\' )
-			m_dir += u"\\*";
-		else m_dir += u"*";
+
+		if( m_dir[ m_dir.size() - 1u ] != u'/'	&& m_dir[ m_dir.size() - 1u ] != u'\\' )
+			m_dir.append( u"\\*" );
+		else m_dir.append( u"*" );
 
 	}
 }
@@ -185,6 +197,12 @@ bool gtFileSystemWin32::copyFile( const gtString& existingFileName, const gtStri
 gtString gtFileSystemWin32::getProgramPath( void ){
 	return m_exePath;
 }
+
+	//	возвращает путь к системной папке
+gtString gtFileSystemWin32::getSystemPath( void ){
+	return m_systemPath;
+}
+
 
 /*
 Copyright (c) 2017 532235

@@ -59,6 +59,15 @@ namespace gost{
 			
 			//	Создаёт окно, которое можно использовать для рисования 3D сцены
 		virtual gtWindow*	createSystemWindow( const gtWindowInfo& ) = 0;
+
+			//	Инициализирует видео драйвер
+		virtual gtDriver*	createVideoDriver( const gtDriverInfo& ) = 0;
+
+			//	Завершает работу видео драйвера, выгружает .dll и удаляет из коллекции
+			//	возможно и не нужно.
+			//	можно вызвать driver->release();
+			//	но библиотека будетвсё ещё загружена. По этому есть эта функция.
+		virtual void		removeVideoDriver( gtDriver** ) = 0;
 		
 	};
 

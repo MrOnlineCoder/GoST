@@ -57,6 +57,7 @@ namespace gost{
 			//	Установит заголовок окна
 		virtual void	setWindowTitle( const gtString& ) = 0;
 
+		virtual void*	getHandle( void ) = 0;
 
 	};
 

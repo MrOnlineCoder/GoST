@@ -24,7 +24,7 @@ namespace gost{
 			gtFileSystem::FileAction action,
 			gtFileSystem::FileShareMode EFSM,
 			u32 EFA );
-		~gtFileWin32( void );
+		virtual ~gtFileWin32( void );
 
 
 		TextFileInfo	getTextFileInfo( void );

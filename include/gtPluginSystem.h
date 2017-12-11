@@ -10,6 +10,8 @@
 
 namespace gost{
 	
+	class gtMainSystem;
+
 		//	тип плагина
 	enum class gtPluginType{
 
@@ -32,7 +34,17 @@ namespace gost{
 	struct gtPluginInfo{
 		gtPluginInfo( void ):
 			m_type( gtPluginType::unknown )
-		{}
+		{
+				//	нельзя выделять память в одном модуле и освобождать в другом
+				//	выход за пределы - на совести разработчика плагина
+			m_name.reserve( 64u );
+			m_author.reserve( 64u );
+			m_url.reserve( 64u );
+			m_email.reserve( 64u );
+			m_company.reserve( 64u );
+			m_description.reserve( 512u );
+			m_GUID.reserve( 64u );
+		}
 
 		//	тип плагина
 		gtPluginType m_type;
@@ -54,10 +66,19 @@ namespace gost{
 
 		//	описание
 		gtString m_description;
+
+		//	уникальный ID. по сути любая строка.
+		//	имя по аналогии с GUID. {41B20362-9FC0-4C40-9903-B8D2FF98CF88}
+		gtString m_GUID;
+
 	};
 
+	//	указывается при создании gtDriver
+	const gtString GT_GUID_RENDER_D3D11( u"{41B20362-9FC0-4C40-9903-B8D2FF98CF88}" );
 
-	using gtGetPlugunInfo = gtPluginInfo&(*)();
+	//	для загрузки функций из плагинов
+	using gtGetPluginInfo = void(*)(gtPluginInfo&);
+	using gtLoadGPUDriver_t = gtDriver*(*)(gtMainSystem*,gtDriverInfo);
 
 		//	Интерфейс для работы с плагинами
 	class gtPluginSystem : public gtRefObject{

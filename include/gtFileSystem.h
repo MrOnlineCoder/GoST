@@ -10,7 +10,7 @@
 namespace gost{
 
 		//	чтобы не мучится в выделении памяти в разных модулях (.dll)
-		//	проще использовать массивы с заранее выделенной паматью.
+		//	проще использовать массивы с заранее выделенной паматью. Либо делать .reserve( GT_MAX_PATH );
 		//	Размер массива который будет хранить путь к файлу
 	constexpr u32 GT_MAX_PATH = 256u;
 
@@ -229,7 +229,7 @@ namespace gost{
 		};
 
 			//	перед сканированием папки нужно вызвать это
-		GT_API static void scanDirBegin( const gtString& dir );
+		GT_API static void scanDirBegin( gtString dir );
 
 			//	после завершения сканирования нужно вызвать это
 		GT_API static void scanDirEnd( void );
@@ -244,6 +244,9 @@ namespace gost{
 			//	возвращает путь к папке в которой лежит исполняемый файл программы
 			//	например "C:/Games/SuperGame/"
 		GT_API static gtString getProgramPath( void );
+
+			//	возвращает путь к системной папке
+		GT_API static gtString getSystemPath( void );
 
 	};
 

@@ -43,8 +43,9 @@ bool gtFileSystem::createDir( const gtString& dir ){
 //}
 
 	//	перед сканированием папки нужно вызвать это
-void gtFileSystem::scanDirBegin( const gtString& dir ){
-	gtMainSystemCommon::s_fileSystem->scanDirBegin( dir );
+void gtFileSystem::scanDirBegin( gtString dir ){
+	gtString dir2 = dir;
+	gtMainSystemCommon::s_fileSystem->scanDirBegin( dir2 );
 }
 			
 	//	после завершения сканирования нужно вызвать это
@@ -67,6 +68,11 @@ bool gtFileSystem::copyFile( const gtString& existingFileName, const gtString& n
 	//	например "C:/Games/SuperGame/"
 gtString gtFileSystem::getProgramPath( void ){
 		return gtMainSystemCommon::s_fileSystem->getProgramPath();
+}
+
+	//	возвращает путь к системной папке
+gtString gtFileSystem::getSystemPath( void ){
+	return gtMainSystemCommon::s_fileSystem->getSystemPath();
 }
 
 /*

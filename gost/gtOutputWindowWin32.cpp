@@ -14,7 +14,9 @@ gtOutputWindowWin32::gtOutputWindowWin32( void ) : m_isInit( false ),
 m_hWnd( nullptr ){
 	memset( &m_wc, 0, sizeof( m_wc ) );
 }
-gtOutputWindowWin32::~gtOutputWindowWin32( void ){}
+gtOutputWindowWin32::~gtOutputWindowWin32( void ){
+	shutdown();
+}
 
 //	Инициализация
 void	gtOutputWindowWin32::init( void ){

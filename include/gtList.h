@@ -38,7 +38,9 @@ namespace gost{
 	public:
 
 		gtList(void):m_first(nullptr),m_last(nullptr),m_size(0u){}
-		~gtList(void){clear();}
+		~gtList(void){
+			clear();
+		}
 
 			//	добавляет новый элемент
 		void add( Type v ){

@@ -19,12 +19,12 @@ namespace gost{
 
 		gtString m_dir;
 
-		gtString m_exePath;
+		gtString m_exePath, m_systemPath;
 
 	public:
 
 		gtFileSystemWin32( void );
-		~gtFileSystemWin32( void );
+		virtual ~gtFileSystemWin32( void );
 
 
 		gtFile* createFile( const gtString& fileName, gtFileSystem::FileMode mode,
@@ -46,7 +46,7 @@ namespace gost{
 		//u32 getDirItemsCount( const gtString& dir );
 
 			//	перед сканированием папки нужно вызвать это
-		void scanDirBegin( const gtString& dir );
+		void scanDirBegin( gtString dir );
 			//	после завершения сканирования нужно вызвать это
 		void scanDirEnd( void );
 			//	заполнит структуру DirObject если есть файл/папка
@@ -58,6 +58,9 @@ namespace gost{
 			//	возвращает путь к папке в которой лежит исполняемый файл программы
 			//	например "C:/Games/SuperGame/"
 		gtString getProgramPath( void );
+
+			//	возвращает путь к системной папке
+		gtString getSystemPath( void );
 	};
 
 }

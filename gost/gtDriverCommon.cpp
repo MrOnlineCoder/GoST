@@ -1,56 +1,10 @@
-﻿//	GOST
-
-#pragma once
-#ifndef __STDAFX_H__
-#define __STDAFX_H__
-
-#include "targetver.h"
-#pragma warning(disable : 4002)	//	to many actual parameters for macro
-#pragma warning(disable : 4091) // dbghelp.h 
-#pragma warning(disable : 4668)
-#pragma warning(disable : 4710)
-#pragma warning(disable : 4777) // _snprintf %i
-#pragma warning(disable : 4477) // _snprintf %#010x
-#pragma warning(disable : 4820)
-#pragma warning(disable : 4826)	//	conversion from 'unsigned long *' to DWORD64 is sign-extended
-#pragma warning(disable : 4917)
-
-
-// Windows Header Files:
-#include <windows.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-
-
-#define GT_EXPORTS
-
-#include <gost.h>
-
-using namespace gost;
-
 //	GOST
-#include "gtOutputWindowWin32.h"
 
-#include "gtFileWin32.h"
-
-#include "gtFileSystemCommon.h"
-#include "gtFileSystemWin32.h"
-
-#include "gtPluginSystemImpl.h"
-
-#include "gtDriverCommon.h"
-
-#include "gtMainSystemCommon.h"
-#include "gtMainSystemWin32.h"
-
-#include "gtLogerImpl.h"
-
-#include "gtWindowCommon.h"
-#include "gtWindowWin32.h"
+#include "stdafx.h"
 
 
-
-#endif
+//gtDriverCommon::gtDriverCommon(){}
+//gtDriverCommon::~gtDriverCommon(){}
 
 /*
 Copyright (c) 2017 532235
