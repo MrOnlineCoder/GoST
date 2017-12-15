@@ -119,55 +119,40 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	 
 	
 		
-	gtDeviceCreationParameters params;
+	    gtDeviceCreationParameters params;
+ 
+    gtPtr<gtMainSystem> my_system( gtPtrNew<gtMainSystem>( InitializeGoSTEngine(params) ) );
+    
+    if( !my_system.data() ) return 1;
+        
+    gtWindowInfo wi;
+    
+    gtPtr< gtWindow > window1;
+ 
+    wi.m_style = gtWindowInfo::_standart;
+    wi.m_style |= gtWindowInfo::_maximize;
+    wi.m_style |= gtWindowInfo::_resize;
+ 
+    window1 = gtPtrNew<gtWindow>( my_system->createSystemWindow( wi ) );
+ 
+        
+    gtDriverInfo vparams;
+    vparams.m_GUID = GT_GUID_RENDER_D3D11;
+    
+    vparams.m_outWindow = window1.data();
+    gtDriver* driver1 = my_system->createVideoDriver( vparams );
+ 
+	gtMaterial material;
 
-	gtPtr<gtMainSystem> my_system( gtPtrNew<gtMainSystem>( InitializeGoSTEngine(params) ) );
-	
-	if( !my_system.data() ) return 1;
-		
-	gtWindowInfo wi;
-	
-	gtPtr< gtWindow > window1, window2, window3;
-
-	wi.m_style = gtWindowInfo::_standart;
-	wi.m_style |= gtWindowInfo::_maximize;
-	wi.m_style |= gtWindowInfo::_resize;
-
-	window1 = gtPtrNew<gtWindow>( my_system->createSystemWindow( wi ) );
-	window2 = gtPtrNew<gtWindow>( my_system->createSystemWindow( wi ) );
-	window3 = gtPtrNew<gtWindow>( my_system->createSystemWindow( wi ) );
-
-		
-	gtDriverInfo vparams;
-	vparams.m_GUID = GT_GUID_RENDER_D3D11;
-	
-	vparams.m_outWindow = window1.data();
-	gtDriver* driver1 = my_system->createVideoDriver( vparams );
-
-	vparams.m_outWindow = window2.data();
-	gtDriver* driver2 = my_system->createVideoDriver( vparams );
-
-	vparams.m_outWindow = window3.data();
-	gtDriver* driver3 = my_system->createVideoDriver( vparams );
-
-	while( my_system->update() ){
-
-		if( driver1 ){
-			driver1->beginRender(true,gtColor(1.f,0.f,0.f,1.f));
-			driver1->endRender();
-		}
-
-		if( driver2 ){
-			driver2->beginRender(true,gtColor(0.f,0.f,1.f,1.f));
-			driver2->endRender();
-		}
-
-		if( driver3 ){
-			driver3->beginRender(true,gtColor(0.f,1.f,0.f,1.f));
-			driver3->endRender();
-		}
-
-	}
+    while( my_system->update() ){
+ 
+        if( driver1 ){
+            driver1->beginRender(true,gtColor(1.f,0.f,0.f,1.f));
+			driver1->draw2DImage(v4f({1,1,1,1}),material);
+            driver1->endRender();
+        }
+ 
+    }
 
     return 0;
 }

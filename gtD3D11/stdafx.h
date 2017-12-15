@@ -13,10 +13,12 @@
 
 #include <d3d11.h>
 
+#include <memory>
 
 #include "gost.h"
 using namespace gost;
 
+#include "gtShaderImpl.h"
 
 #include "gtDriverD3D11.h"
 

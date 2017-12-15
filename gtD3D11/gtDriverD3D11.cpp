@@ -17,7 +17,8 @@ gtDriverD3D11::gtDriverD3D11( gtMainSystem* System, gtDriverInfo params ):
 	m_RasterizerSolid( nullptr ),
 	m_RasterizerSolidNoBackFaceCulling( nullptr ),
 	m_RasterizerWireframe( nullptr ),
-	m_RasterizerWireframeNoBackFaceCulling( nullptr )
+	m_RasterizerWireframeNoBackFaceCulling( nullptr ),
+	m_shader2DStandart( nullptr )
 {
 	m_params =  params;
 #ifdef GT_DEBUG
@@ -27,6 +28,9 @@ gtDriverD3D11::gtDriverD3D11( gtMainSystem* System, gtDriverInfo params ):
 
 
 gtDriverD3D11::~gtDriverD3D11( void ){
+
+	if( m_shader2DStandart )
+		m_shader2DStandart->release();
 
 	if( m_RasterizerWireframeNoBackFaceCulling )
 		m_RasterizerWireframeNoBackFaceCulling->Release();
@@ -58,16 +62,29 @@ gtDriverD3D11::~gtDriverD3D11( void ){
 	if( m_d3d11DevCon )
 		m_d3d11DevCon->Release();
 
+	if( m_SwapChain )
+		m_SwapChain->Release();
+	
 	if( m_d3d11Device )
 		m_d3d11Device->Release();
 
-	if( m_SwapChain )
-		m_SwapChain->Release();
-
 	if( m_D3DLibrary )
 		FreeLibrary( m_D3DLibrary );
+
 }
 
+HMODULE gtDriverD3D11::getD3DLibraryHandle( void ){
+	return m_D3DLibrary;
+}
+
+ID3D11Device * gtDriverD3D11::getD3DDevice( void ){
+	return m_d3d11Device;
+}
+
+void gtDriverD3D11::setActiveShader( gtShader* shader ){
+	m_d3d11DevCon->VSSetShader( ((gtShaderImpl*)shader)->m_vShader, 0, 0 );
+	m_d3d11DevCon->PSSetShader( ((gtShaderImpl*)shader)->m_pShader, 0, 0 );
+}
 
 const gtDriverInfo&	gtDriverD3D11::getParams( void ) const {
 		return  m_params;
@@ -295,11 +312,37 @@ bool gtDriverD3D11::initialize( void ){
 	viewport.TopLeftY	=	0.0f;
 	m_d3d11DevCon->RSSetViewports( 1, &viewport );
 
+	//	в будущем стандартные шейдеры нужно убрать внутрь плагина
+	gtShaderModel shaderModel;
+	shaderModel.pixelShaderModel = gtShaderModel::shaderModel::_5_0;
+	shaderModel.vertexShaderModel = gtShaderModel::shaderModel::_5_0;
+
+	gtVertexType vertexType[] = 
+	{
+		{ gtVertexType::position },
+		{ gtVertexType::end }
+	};
+
+	m_shader2DStandart = getShader( 
+		u"../shaders/2d_basic.hlsl",
+		"VSMain",
+		u"../shaders/2d_basic.hlsl",
+		"PSMain",
+		shaderModel,
+		vertexType
+		);
+	if( m_shader2DStandart ){
+
+		//	создание константного буффера.
+		if( !m_shader2DStandart->createShaderObject( 96u ) ) return false;
+	}
+
 	return true;
 }
 
 void gtDriverD3D11::clearRenderTarget( const gtColor& color ){
 	m_d3d11DevCon->ClearRenderTargetView( m_MainTargetView, color.getData() );
+	m_d3d11DevCon->ClearDepthStencilView( m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0 );
 }
 
 void gtDriverD3D11::beginRender( bool _clearRenderTarget, const gtColor& color ){
@@ -323,6 +366,238 @@ void gtDriverD3D11::endRender( void ){
 		m_beginRender = false;
 	}
 }
+
+	//	нарисует картинку
+	//	rect - координаты левого верхнего и правого нижнего углов
+void gtDriverD3D11::draw2DImage( const v4f& rect, const gtMaterial& material ){
+	
+	gtShader * shader = material.shader;
+	if( !shader ){
+		shader = m_shader2DStandart;
+	}
+		
+	struct cbVerts{
+		v4f v1;
+		v4f v2;
+		v4f v3;
+		v4f v4;
+		v2f t1;
+		v2f t2;
+		v2f t3;
+		v2f t4;
+	}cb;
+
+	//	нужно послать в константный буффер координаты
+
+	//	позиция
+	cb.v1[ 0 ] = -0.5f;	//x		
+	cb.v1[ 1 ] = -0.5f;	//y		
+	cb.v1[ 2 ] = 0.5f;	//z		*
+	cb.v1[ 3 ] = 1.f;
+
+	cb.v2[ 0 ] = -0.5f;	//x		*
+	cb.v2[ 1 ] = 0.5f;	//y		|
+	cb.v2[ 2 ] = 0.5f;	//z		*
+	cb.v2[ 3 ] = 1.f;
+
+	cb.v3[ 0 ] = 0.5f;	//x		*-----*
+	cb.v3[ 1 ] = 0.5f;	//y		|	/
+	cb.v3[ 2 ] = 0.5f;	//z		*/
+	cb.v3[ 3 ] = 1.f;
+
+	cb.v4[ 0 ] = 0.5f;	//x		*-----*
+	cb.v4[ 1 ] = -0.5f;	//y		|	/
+	cb.v4[ 2 ] = 0.5f;	//z		*/    *
+	cb.v4[ 3 ] = 1.f;
+	//индексы указываются в шейдере в ручную с помощью SV_VertexID
+
+	setActiveShader( shader );
+
+	m_d3d11DevCon->IASetInputLayout( NULL );
+	m_d3d11DevCon->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	m_d3d11DevCon->Map(
+		((gtShaderImpl*)shader)->m_constantBuffers[ 0 ],
+		0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
+
+	D3D11_BUFFER_DESC d;
+	((gtShaderImpl*)shader)->m_constantBuffers[ 0 ]->GetDesc( &d );
+
+	memcpy( mappedResource.pData, &cb, d.ByteWidth );
+	m_d3d11DevCon->Unmap( ((gtShaderImpl*)shader)->m_constantBuffers[ 0 ], 0 );
+
+	m_d3d11DevCon->VSSetConstantBuffers( 0, 1, &((gtShaderImpl*)shader)->m_constantBuffers[ 0 ] );
+	m_d3d11DevCon->Draw( 6, 0 );
+}
+
+
+	//	компилировать либо получить ранее скомпилированный шейдер
+gtShader *	gtDriverD3D11::getShader( 
+		//	путь к файлу хранящем вершинный шейдер
+	const gtString& vertexShader,
+		//	главная функция вершинного шейдера, точка входа
+	const gtStringA& vertexShaderMain,
+		//	путь к файлу хранящем пиксельный/фрагментный шейдер
+	const gtString& pixelShader,
+		//	главная функция пиксельного/фрагментного шейдера, точка входа
+	const gtStringA& pixelShaderMain,
+		//	тип шейдерного языка
+	gtShaderModel shaderModel,
+
+	gtVertexType * vertexType
+){
+	//	для хранения текста шейдера
+	std::unique_ptr<s8[]> vertexBuffer;
+	std::unique_ptr<s8[]> pixelBuffer;
+
+	//	если указан файл то читаем его
+	if( gtFileSystem::existFile( vertexShader ) ){
+
+		gtFile_t file = util::openFileForReadText( vertexShader );
+
+		u32 sz = file->size();
+		
+		if( !sz ){
+			gtLogWriter::printError( u"Empty shader file [%s]", vertexShader.data() );
+			return nullptr;
+		}
+
+		vertexBuffer.reset( new s8[ sz+1u ] );
+		vertexBuffer.get()[sz] = 0;
+
+		file->read( (u8*)vertexBuffer.get(), sz );
+
+
+	}else{
+		//	если указан не файл, то скорее всего текст шейдера.
+		u32 sz = vertexShader.size();
+		if( !sz ){
+			gtLogWriter::printError( u"Empty shader file [%s]", vertexShader.data() );
+			return nullptr;
+		}
+
+		vertexBuffer.reset( new s8[ sz+1u ] );
+		vertexBuffer.get()[sz] = 0;
+		auto * data = vertexShader.data();
+
+		for( u32 i = 0u; i < sz; ++i ){
+			auto * b = vertexBuffer.get();
+			b[ i ] = (s8)data[ i ];
+		}
+	}
+
+	if( gtFileSystem::existFile( pixelShader ) ){
+		gtFile_t file = util::openFileForReadText( pixelShader );
+		u32 sz = file->size();
+		if( !sz ){
+			gtLogWriter::printError( u"Empty shader file [%s]", pixelShader.data() );
+			return nullptr;
+		}
+		pixelBuffer.reset( new s8[ sz+1 ] );
+		pixelBuffer.get()[sz] = 0;
+
+		file->read( (u8*)pixelBuffer.get(), sz );
+	}else{
+		u32 sz = pixelShader.size();
+		if( !sz ){
+			gtLogWriter::printError( u"Empty shader file [%s]", pixelShader.data() );
+			return nullptr;
+		}
+		pixelBuffer.reset( new s8[ sz+1 ] );
+		pixelBuffer.get()[sz] = 0;
+		auto * data = pixelShader.data();
+		for( u32 i = 0u; i < sz; ++i ){
+			auto * b = pixelBuffer.get();
+			b[ i ] = (s8)data[ i ];
+		}
+	}
+
+	gtStringA v_target;
+
+	switch( shaderModel.vertexShaderModel ){
+	case gtShaderModel::shaderModel::_1_1:
+	case gtShaderModel::shaderModel::_1_2:
+	case gtShaderModel::shaderModel::_1_3:
+	case gtShaderModel::shaderModel::_1_4:
+	case gtShaderModel::shaderModel::_1_5:
+		v_target = "vs_1_1";
+		break;
+	case gtShaderModel::shaderModel::_2_0:
+		v_target = "vs_2_0";
+		break;
+	case gtShaderModel::shaderModel::_3_0:
+	case gtShaderModel::shaderModel::_3_3:
+		v_target = "vs_3_0";
+		break;
+	case gtShaderModel::shaderModel::_4_0:
+		v_target = "vs_4_0";
+		break;
+	case gtShaderModel::shaderModel::_4_1:
+	case gtShaderModel::shaderModel::_4_2:
+	case gtShaderModel::shaderModel::_4_3:
+	case gtShaderModel::shaderModel::_4_5:
+		v_target = "vs_4_1";
+		break;
+	case gtShaderModel::shaderModel::_5_0:
+		v_target = "vs_5_0";
+		break;
+	case gtShaderModel::shaderModel::_6_0:
+		v_target = "vs_6_0";
+		break;
+	}
+
+	gtStringA p_target;
+
+	switch( shaderModel.pixelShaderModel ){
+	case gtShaderModel::shaderModel::_1_1:
+	case gtShaderModel::shaderModel::_1_2:
+	case gtShaderModel::shaderModel::_1_3:
+	case gtShaderModel::shaderModel::_1_4:
+	case gtShaderModel::shaderModel::_1_5:
+		p_target = "ps_1_1";
+		break;
+	case gtShaderModel::shaderModel::_2_0:
+		p_target = "ps_2_0";
+		break;
+	case gtShaderModel::shaderModel::_3_0:
+	case gtShaderModel::shaderModel::_3_3:
+		p_target = "ps_3_0";
+		break;
+	case gtShaderModel::shaderModel::_4_0:
+		p_target = "ps_4_0";
+		break;
+	case gtShaderModel::shaderModel::_4_1:
+	case gtShaderModel::shaderModel::_4_2:
+	case gtShaderModel::shaderModel::_4_3:
+	case gtShaderModel::shaderModel::_4_5:
+		p_target = "ps_4_1";
+		break;
+	case gtShaderModel::shaderModel::_5_0:
+		p_target = "ps_5_0";
+		break;
+	case gtShaderModel::shaderModel::_6_0:
+		p_target = "ps_6_0";
+		break;
+	}
+
+	gtPtr< gtShaderImpl > shader = gtPtrNew< gtShaderImpl >( new gtShaderImpl(this) );
+
+	if( !shader->compileShader( 
+		v_target, 
+		p_target,
+		vertexBuffer.get(),
+		pixelBuffer.get(),
+		(s8*)vertexShaderMain.data(),
+		(s8*)pixelShaderMain.data(),
+		vertexType ) ){
+		return nullptr;
+	}
+
+	shader->addRef();
+	return shader.data();
+}
+
 
 /*
 Copyright (c) 2017 532235

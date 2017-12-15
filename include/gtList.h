@@ -140,6 +140,18 @@ namespace gost{
 			}
 		}
 
+		void	removeFirst( void ){
+			if( m_first ){
+				auto * toDelete = m_first;
+
+				m_first = toDelete->m_next;
+
+				delete toDelete;
+				toDelete = nullptr;
+				m_size--;
+			}
+		}
+
 			//	Найдёт количество эементов с указанным значением
 		u32		findCount( Type val ){
 			u32 C = 0u;

@@ -59,7 +59,7 @@ namespace gost{
 		}
 
 			//	видео драйвер
-		gtPtr<gtDriver> m_driver;
+		gtDriver* m_driver;
 
 			//	загрузить плагин
 		void load( const gtDriverInfo& params );
@@ -79,7 +79,7 @@ namespace gost{
 		gtArray<gtPluginInfoDL> m_renderPluginCache;
 		
 		//	загруженные плагины
-		gtList<gtPluginRender*>	m_renderPlugins;
+		gtList<gtPtr<gtPluginRender>>	m_renderPlugins;
 
 	public:
 		gtPluginSystemImpl( void );
