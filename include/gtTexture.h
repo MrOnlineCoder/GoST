@@ -1,68 +1,34 @@
 ﻿//	GOST
 
 #pragma once
-#ifndef __GOST_H__
-#define __GOST_H__
+#ifndef __GT_TEXTURE_H__
+#define __GT_TEXTURE_H__
 
 /*
-	Главный include файл движка GOST 
+	Hardware текстура
 */
-
-//	C++
-//#include <cctype> //isalpha
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <typeinfo>
-
-//	GOST 
-#include <gtInfo.h>
-#include <gtTypes.h>
-
-
-#include <gtUtilities.h>
-
-#include <gtError.h>
-
-#include <gtList.h>
-
-#include <gtVector.h>
-#include <gtColor.h>
-
-#include <gtVertex.h>
-
-#include <gtBaseObject.h>
-#include <gtRefObject.h>
-#include <gtPtr.h>
-
-#include <gtImage.h>
-#include <gtTexture.h>
-#include <gtShader.h>
-#include <gtMaterial.h>
-
-
-#include <gtDriver.h>
-
-#include <gtPluginSystem.h>
-
-#include <gtWindow.h>
-
-#include <gtOutputWindow.h>
-
-#include <gtLoger.h>
-
-#include <gtFileSystem.h>
-
-#include <gtMainSystem.h>
-
-#define GT_USE_STACK_TRACE
-#include <gtStackTrace.h>
 
 namespace gost{
 
-	///	Инициализация 
-GT_API gtMainSystem* InitializeGoSTEngine( const gtDeviceCreationParameters& );
+		//	тип текстуры
+	enum gtTextureType : u32 {
+
+		//	обычная
+		TEXTURE_TYPE_2D,
+
+		//	cubemap
+		TEXTURE_TYPE_CUBE
+	};
+
+		//	текстура
+	class gtTexture : public gtRefObject {
+	public:
+
+			//	возвратит тип текстуры
+		virtual gtTextureType	getType( void ) = 0;
+
+	};
+
 
 }
 
@@ -70,7 +36,7 @@ GT_API gtMainSystem* InitializeGoSTEngine( const gtDeviceCreationParameters& );
 #endif
 
 /*
-Copyright (c) 2017
+Copyright (c) 2017 532235
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
 and associated documentation files (the "Software"), to deal in the Software without restriction, 

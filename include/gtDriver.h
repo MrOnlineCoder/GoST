@@ -67,7 +67,29 @@ namespace gost{
 		virtual void beginRender( bool clearRenderTarget = true, const gtColor& color = gtColor(0.f) ) = 0;
 		virtual void endRender( void ) = 0;
 
+			//	нарисует картинку
+			//	rect - координаты левого верхнего и правого нижнего углов
+		virtual void draw2DImage( const v4f& rect, const gtMaterial& ) = 0;
+
 		virtual void *	getPluginHandle( void ) = 0;
+
+			//	компилировать либо получить ранее скомпилированный шейдер
+		virtual gtShader *	getShader( 
+				//	путь к файлу хранящем вершинный шейдер
+			const gtString& vertexShader,
+				//	главная функция вершинного шейдера, точка входа
+			const gtStringA& vertexShaderMain,
+				//	путь к файлу хранящем пиксельный/фрагментный шейдер
+			const gtString& pixelShader,
+				//	главная функция пиксельного/фрагментного шейдера, точка входа
+			const gtStringA& pixelShaderMain,
+				//	тип шейдерного языка
+			gtShaderModel shaderModel,
+				//	тип вершины (должен быть массив)
+			gtVertexType * vertexType
+			) = 0;
+
+
 	};
 
 		//	реализация драйвера в отдельных dll

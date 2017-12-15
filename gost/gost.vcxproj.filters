@@ -117,6 +117,21 @@
     <ClInclude Include="gtDriverCommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\gtMaterial.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtTexture.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtImage.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtShader.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtVertex.h">
+      <Filter>gost</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

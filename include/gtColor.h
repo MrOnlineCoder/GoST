@@ -157,6 +157,23 @@ namespace gost{
 			this->setAsByteBlue( static_cast<u8>( v ) );
 			this->setAsByteAlpha( static_cast<u8>( v >> 24 ) );
 		}
+
+			//	установить значением float
+		void set( f32 r, f32 g, f32 b, f32 a = 1.f ){
+			setAlpha( a );
+			setRed( r );
+			setGreen( g );
+			setBlue( b );
+		}
+
+			//	установить значением float.
+			//	одно значение на каждый цвет
+		void set( f32 v, f32 a = 1.f ){
+			setAlpha( a );
+			setRed( v );
+			setGreen( v );
+			setBlue( v );
+		}
 	};
 
 	namespace util{

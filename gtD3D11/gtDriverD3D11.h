@@ -5,8 +5,45 @@
 #ifndef __GT_DRIVER_D3D11_H__
 #define __GT_DRIVER_D3D11_H__
 
-using gtD3D11CreateDevice_t = HRESULT(__stdcall*)(_In_opt_ IDXGIAdapter* pAdapter,D3D_DRIVER_TYPE DriverType,HMODULE Software,UINT Flags,_In_reads_opt_( FeatureLevels ) CONST D3D_FEATURE_LEVEL* pFeatureLevels,UINT FeatureLevels,UINT SDKVersion,_Out_opt_ ID3D11Device** ppDevice,_Out_opt_ D3D_FEATURE_LEVEL* pFeatureLevel,_Out_opt_ ID3D11DeviceContext** ppImmediateContext);
-using gtD3D11CreateDeviceAndSwapChain_t = HRESULT(__stdcall*)(__in_opt IDXGIAdapter* pAdapter,D3D_DRIVER_TYPE DriverType,HMODULE Software,UINT Flags,__in_ecount_opt( FeatureLevels ) CONST D3D_FEATURE_LEVEL* pFeatureLevels,UINT FeatureLevels,UINT SDKVersion,__in_opt CONST DXGI_SWAP_CHAIN_DESC* pSwapChainDesc,__out_opt IDXGISwapChain** ppSwapChain,__out_opt ID3D11Device** ppDevice,__out_opt D3D_FEATURE_LEVEL* pFeatureLevel,__out_opt ID3D11DeviceContext** ppImmediateContext );
+using gtD3D11CreateDevice_t = HRESULT(__stdcall*)(
+	_In_opt_ IDXGIAdapter* pAdapter,
+	D3D_DRIVER_TYPE DriverType,
+	HMODULE Software,
+	UINT Flags,
+	_In_reads_opt_( FeatureLevels ) CONST D3D_FEATURE_LEVEL* pFeatureLevels,
+	UINT FeatureLevels,
+	UINT SDKVersion,
+	_Out_opt_ ID3D11Device** ppDevice,
+	_Out_opt_ D3D_FEATURE_LEVEL* pFeatureLevel,
+	_Out_opt_ ID3D11DeviceContext** ppImmediateContext);
+
+using gtD3D11CreateDeviceAndSwapChain_t = HRESULT(__stdcall*)(
+	__in_opt IDXGIAdapter* pAdapter,
+	D3D_DRIVER_TYPE DriverType,
+	HMODULE Software,
+	UINT Flags,
+	__in_ecount_opt( FeatureLevels ) CONST D3D_FEATURE_LEVEL* pFeatureLevels,
+	UINT FeatureLevels,
+	UINT SDKVersion,
+	__in_opt CONST DXGI_SWAP_CHAIN_DESC* pSwapChainDesc,
+	__out_opt IDXGISwapChain** ppSwapChain,
+	__out_opt ID3D11Device** ppDevice,
+	__out_opt D3D_FEATURE_LEVEL* pFeatureLevel,
+	__out_opt ID3D11DeviceContext** ppImmediateContext );
+
+//	D3dcompiler_47.dll
+using gtD3DCompile_t = HRESULT (__stdcall*)(
+	__in_bcount(SrcDataSize) LPCVOID pSrcData,
+	__in SIZE_T SrcDataSize,
+    __in_opt LPCSTR pSourceName,
+    __in_xcount_opt(pDefines->Name != NULL) CONST D3D_SHADER_MACRO* pDefines,
+    __in_opt ID3DInclude* pInclude,
+    __in LPCSTR pEntrypoint,
+    __in LPCSTR pTarget,
+    __in UINT Flags1,
+    __in UINT Flags2,
+    __out ID3DBlob** ppCode,
+    __out_opt ID3DBlob** ppErrorMsgs);
 
 namespace gost{
 
@@ -34,17 +71,45 @@ namespace gost{
 
 		bool m_beginRender;
 
+			//	стандартный шейдер для рисования 2Д элементов
+		gtShader*			m_shader2DStandart;
+
+		void	setActiveShader( gtShader* );
+
 	public:
 		gtDriverD3D11( gtMainSystem* System, gtDriverInfo params );
 		~gtDriverD3D11( void );
+
 		bool initialize( void );
 
+		HMODULE getD3DLibraryHandle( void );
+		ID3D11Device * getD3DDevice( void );
 
 
 		const gtDriverInfo&	getParams( void ) const;
 			//	
 		void beginRender( bool clearRenderTarget = true, const gtColor& color = gtColor(0.f) );
 		void endRender( void );
+
+			//	нарисует картинку
+			//	rect - координаты левого верхнего и правого нижнего углов
+		void draw2DImage( const v4f& rect, const gtMaterial& );
+
+			//	компилировать либо получить ранее скомпилированный шейдер
+		gtShader *	getShader( 
+				//	путь к файлу хранящем вершинный шейдер
+			const gtString& vertexShader,
+				//	главная функция вершинного шейдера, точка входа
+			const gtStringA& vertexShaderMain,
+				//	путь к файлу хранящем пиксельный/фрагментный шейдер
+			const gtString& pixelShader,
+				//	главная функция пиксельного/фрагментного шейдера, точка входа
+			const gtStringA& pixelShaderMain,
+				//	тип шейдерного языка
+			gtShaderModel shaderModel,
+				//	тип вершины (должен быть массив)
+			gtVertexType * vertexType
+			);
 	};
 
 }

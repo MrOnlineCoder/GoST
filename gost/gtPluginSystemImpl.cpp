@@ -9,14 +9,7 @@ gtPluginSystemImpl::gtPluginSystemImpl( void ):
 }
 
 
-gtPluginSystemImpl::~gtPluginSystemImpl( void ){
-	for each ( auto var in m_renderPluginCache ){
-		if( var.m_handle ){
-			GT_FREE_LIBRARY( var.m_handle );
-		}
-	}
-	m_renderPluginCache.clear();
-}
+gtPluginSystemImpl::~gtPluginSystemImpl( void ){}
 
 
 void gtPluginSystemImpl::scanFolder( const gtString& dir ){
@@ -117,13 +110,12 @@ u32	gtPluginSystemImpl::getNumOfPlugins( void ){
 }
 
 gtDriver*	gtPluginSystemImpl::loadRenderPlugin( const gtDriverInfo& params ){
-	gtDriver* ret(nullptr);
-
+	
 	u32 sz = m_renderPluginCache.size();
 
 	if( !sz ){
 		gtLogWriter::printError( u"Can not load render plugin [%s]. No plugin.", params.m_GUID.data() );
-		return ret;
+		return nullptr;
 	}
 
 	for( u32 i = 0u; i < sz; ++i ){
@@ -132,18 +124,15 @@ gtDriver*	gtPluginSystemImpl::loadRenderPlugin( const gtDriverInfo& params ){
 
 			gtPtr<gtPluginRender> render = gtPtrNew<gtPluginRender>( new gtPluginRender( o ) );
 			render->load( params );
-
-			ret = render->m_driver.data();
-
+			
 			m_renderPlugins.add( render.data() );
-			render->addRef();
 
-			break;
+			return render->m_driver;
 		}
 	}
 	
 	
-	return ret;
+	return nullptr;
 }
 
 void gtPluginSystemImpl::unloadRenderPlugin( gtDriver* d ){
@@ -152,10 +141,9 @@ void gtPluginSystemImpl::unloadRenderPlugin( gtDriver* d ){
 	for( u32 i = 0u; i < sz; ++i ){
 		auto  o = m_renderPlugins.get( i );
 
-		if( o->m_driver.data() == d ){
-			m_renderPlugins.remove( o );
+		if( o->m_driver == d ){
 			o->unload();
-			delete o;
+			m_renderPlugins.remove( o );
 			break;
 		}
 
@@ -184,9 +172,9 @@ void gtPluginRender::load( const gtDriverInfo& params ){
 				
 		m_info.m_loadPlugin = (void(*)())loadProc;
 
-		m_driver = gtPtrNew<gtDriver>( ((gtLoadGPUDriver_t)m_info.m_loadPlugin)( gtMainSystemCommon::getInstance(), params ) );
+		m_driver = ((gtLoadGPUDriver_t)m_info.m_loadPlugin)( gtMainSystemCommon::getInstance(), params );
 
-		if( m_driver.data() ){
+		if( m_driver ){
 		//	setHandle( m_driver.data(), m_info.m_handle );
 			m_isLoad = true;
 
@@ -199,8 +187,9 @@ void gtPluginRender::load( const gtDriverInfo& params ){
 void gtPluginRender::unload( void ){
 	if( m_isLoad ){
 
-		if( m_driver.data() )
+		if( m_driver )
 			m_driver->release();
+			m_driver = nullptr;
 
 		GT_FREE_LIBRARY( m_info.m_handle );
 		m_info.m_handle = nullptr;
