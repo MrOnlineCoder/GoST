@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClInclude Include="gtDriverD3D11.h" />
     <ClInclude Include="gtShaderImpl.h" />
+    <ClInclude Include="gtTextureD3D11.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -177,6 +178,7 @@
     <ClCompile Include="gtD3D11.cpp" />
     <ClCompile Include="gtDriverD3D11.cpp" />
     <ClCompile Include="gtShaderImpl.cpp" />
+    <ClCompile Include="gtTextureD3D11.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

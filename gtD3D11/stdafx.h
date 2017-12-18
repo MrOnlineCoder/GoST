@@ -20,5 +20,7 @@ using namespace gost;
 
 #include "gtShaderImpl.h"
 
+#include "gtTextureD3D11.h"
+
 #include "gtDriverD3D11.h"
 

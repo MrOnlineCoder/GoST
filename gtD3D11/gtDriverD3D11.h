@@ -110,6 +110,9 @@ namespace gost{
 				//	тип вершины (должен быть массив)
 			gtVertexType * vertexType
 			);
+
+			//	Создаёт текстуру из gtImage
+		gtTexture*	createTexture( gtImage* );
 	};
 
 }

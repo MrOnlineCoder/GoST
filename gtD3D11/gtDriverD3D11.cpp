@@ -28,7 +28,7 @@ gtDriverD3D11::gtDriverD3D11( gtMainSystem* System, gtDriverInfo params ):
 
 
 gtDriverD3D11::~gtDriverD3D11( void ){
-
+	
 	if( m_shader2DStandart )
 		m_shader2DStandart->release();
 
@@ -82,6 +82,7 @@ ID3D11Device * gtDriverD3D11::getD3DDevice( void ){
 }
 
 void gtDriverD3D11::setActiveShader( gtShader* shader ){
+	m_d3d11DevCon->IASetInputLayout( ((gtShaderImpl*)shader)->m_vLayout );
 	m_d3d11DevCon->VSSetShader( ((gtShaderImpl*)shader)->m_vShader, 0, 0 );
 	m_d3d11DevCon->PSSetShader( ((gtShaderImpl*)shader)->m_pShader, 0, 0 );
 }
@@ -390,30 +391,38 @@ void gtDriverD3D11::draw2DImage( const v4f& rect, const gtMaterial& material ){
 	//	нужно послать в константный буффер координаты
 
 	//	позиция
-	cb.v1[ 0 ] = -0.5f;	//x		
-	cb.v1[ 1 ] = -0.5f;	//y		
+	cb.v1[ 0 ] = -1.f;	//x		
+	cb.v1[ 1 ] = -1.f;	//y		
 	cb.v1[ 2 ] = 0.5f;	//z		*
 	cb.v1[ 3 ] = 1.f;
+	cb.t1[ 0 ] = 0.f;	//u
+	cb.t1[ 1 ] = 1.f;	//v
 
-	cb.v2[ 0 ] = -0.5f;	//x		*
-	cb.v2[ 1 ] = 0.5f;	//y		|
+	cb.v2[ 0 ] = -1.f;	//x		*
+	cb.v2[ 1 ] = 1.f;	//y		|
 	cb.v2[ 2 ] = 0.5f;	//z		*
 	cb.v2[ 3 ] = 1.f;
+	cb.t2[ 0 ] = 0.f;	//u
+	cb.t2[ 1 ] = 0.f;	//v
 
-	cb.v3[ 0 ] = 0.5f;	//x		*-----*
-	cb.v3[ 1 ] = 0.5f;	//y		|	/
+	cb.v3[ 0 ] = 1.f;	//x		*-----*
+	cb.v3[ 1 ] = 1.f;	//y		|	/
 	cb.v3[ 2 ] = 0.5f;	//z		*/
 	cb.v3[ 3 ] = 1.f;
+	cb.t3[ 0 ] = 1.f;	//u
+	cb.t3[ 1 ] = 0.f;	//v
 
-	cb.v4[ 0 ] = 0.5f;	//x		*-----*
-	cb.v4[ 1 ] = -0.5f;	//y		|	/
+	cb.v4[ 0 ] = 1.f;	//x		*-----*
+	cb.v4[ 1 ] = -1.f;	//y		|	/
 	cb.v4[ 2 ] = 0.5f;	//z		*/    *
 	cb.v4[ 3 ] = 1.f;
+	cb.t4[ 0 ] = 1.f;	//u
+	cb.t4[ 1 ] = 1.f;	//v
 	//индексы указываются в шейдере в ручную с помощью SV_VertexID
 
 	setActiveShader( shader );
-
-	m_d3d11DevCon->IASetInputLayout( NULL );
+	
+	m_d3d11DevCon->IASetInputLayout( 0 );
 	m_d3d11DevCon->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -426,6 +435,15 @@ void gtDriverD3D11::draw2DImage( const v4f& rect, const gtMaterial& material ){
 
 	memcpy( mappedResource.pData, &cb, d.ByteWidth );
 	m_d3d11DevCon->Unmap( ((gtShaderImpl*)shader)->m_constantBuffers[ 0 ], 0 );
+
+	for( u32 i = 0u; i < 16u; ++i ){
+		if( !material.textureLayer[ i ].texture ) break;
+
+		gtTextureD3D11* texture = (gtTextureD3D11*)material.textureLayer[ i ].texture;
+
+		m_d3d11DevCon->PSSetShaderResources( i, 1, texture->getResourceView() );
+		m_d3d11DevCon->PSSetSamplers( i, 1, texture->getSamplerState() );
+	}
 
 	m_d3d11DevCon->VSSetConstantBuffers( 0, 1, &((gtShaderImpl*)shader)->m_constantBuffers[ 0 ] );
 	m_d3d11DevCon->Draw( 6, 0 );
@@ -598,6 +616,21 @@ gtShader *	gtDriverD3D11::getShader(
 	return shader.data();
 }
 
+	//	Создаёт текстуру из gtImage
+gtTexture*	gtDriverD3D11::createTexture( gtImage* image ){
+	GT_ASSERT2( image, "image!=nullptr" );
+
+	gtPtr<gtTextureD3D11> texture = gtPtrNew<gtTextureD3D11>( new gtTextureD3D11( this ) );
+
+	if( !texture->init( image ) ){
+		gtLogWriter::printWarning( u"Can not init D3D11 texture" );
+		return nullptr;
+	}
+
+	texture->addRef();
+
+	return texture.data();
+}
 
 /*
 Copyright (c) 2017 532235

@@ -1,43 +1,48 @@
-//GoST
+//	GOST
 
-#include "stdafx.h"
+#pragma once
+#ifndef __GT_TEXTURE_D3D11_H__
+#define __GT_TEXTURE_D3D11_H__
 
-#ifdef _DEBUG
-#pragma comment(lib, "gost_d.lib")
-#else 
-#pragma comment(lib, "gost.lib")
+
+namespace gost{
+
+	class gtTextureD3D11 GT_FINAL : public gtTexture{
+
+			//	тип текстуры
+		gtTextureType m_type;
+
+			//	текстура
+		ID3D11Resource*			m_texture;
+		ID3D11ShaderResourceView*	m_textureResView;
+		ID3D11SamplerState*			m_samplerState;
+
+		gtDriverD3D11* m_driver;
+
+		HRESULT	createSamplerState( 
+			D3D11_FILTER filter, 
+			D3D11_TEXTURE_ADDRESS_MODE addressMode,
+			u32 anisotropic_level = 1 );
+	public:
+
+		gtTextureD3D11( gtDriverD3D11* );
+		virtual ~gtTextureD3D11( void );
+
+		bool init( gtImage* image );
+
+		ID3D11ShaderResourceView* const * getResourceView( void );
+		ID3D11SamplerState*	const * getSamplerState( void );
+
+		//	===========================================
+			//	возвратит тип текстуры
+		gtTextureType	getType( void );
+
+	};
+
+}
+
 #endif
 
-extern "C"{
-	//
-	__declspec(dllexport) void	GetPluginInfo( gtPluginInfo& info ){
-		info.m_author.assign( u"532235" );
-		info.m_description.assign( u"Direct3D 11 renderer" );
-		info.m_GUID.assign( GT_GUID_RENDER_D3D11 );
-		info.m_name.assign( u"Direct3D 11 renderer" );
-		info.m_type = gtPluginType::render;
-	}
-
-	__declspec(dllexport) gtDriver * gtLoadGPUDriver( gtMainSystem* System, gtDriverInfo params ){
-
-		gtLogWriter::printInfo( u"Init D3D11 driver..." );
-
-		gtPtr<gtDriverD3D11>	 driver = gtPtrNew<gtDriverD3D11>(new gtDriverD3D11( System, params ));
-		
-		if( driver.data() ){
-			
-			if( driver->initialize()){
-				driver->addRef();
-			}else{
-				driver->release();
-				gtLogWriter::printError( u"Can not initialize D3D11 driver." );
-				return nullptr;
-			}
-		}
-
-		return driver.data();
-	}
-}
 
 
 /*
