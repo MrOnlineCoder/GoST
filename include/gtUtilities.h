@@ -70,6 +70,43 @@ namespace gost{
 			return ret;
 		}
 
+		//	"AbC" -> "abc"
+		template<typename Type>
+		GT_FORCE_INLINE void stringToLower( Type& str ){
+			
+			u32 sz = str.size();
+
+			for( u32 i = 0u; i < sz; ++i ){
+				auto c = str[ i ];
+				if( c <= 'Z' && c >= 'A' )
+					str[ i ] += 32;
+			}
+
+		}
+
+		//	"AbC" -> "ABC"
+		template<typename Type>
+		GT_FORCE_INLINE void stringToUpper( Type& str ){
+			
+			u32 sz = str.size();
+
+			for( u32 i = 0u; i < sz; ++i ){
+				auto c = str[ i ];
+				if( c >= 'a' && c <= 'z' )
+					str[ i ] -= 32;
+			}
+
+		}
+
+		//	добаляет к str строку иного типа
+		template<typename Type, typename AnotherType>
+		GT_FORCE_INLINE void stringAppend( Type& str, AnotherType& other ){
+			u32 sz = 0u;
+			auto * p = &other[0];
+			while( *p++ ) sz++;
+			for( u32 i = 0u; i < sz; ++i )
+				str += other[ i ];
+		}
 
 	}
 

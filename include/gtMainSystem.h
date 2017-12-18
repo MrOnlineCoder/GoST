@@ -9,6 +9,14 @@
 */
 
 namespace gost{
+
+	class gtOutputWindow;
+	class gtLoger;
+	class gtWindow;
+	struct gtWindowInfo;
+	class gtDriver;
+	struct gtDriverInfo;
+	struct gtImage;
 	
 		//	Перечисление ОС
 	enum class gtDeviceType{
@@ -69,6 +77,24 @@ namespace gost{
 			//	но библиотека будетвсё ещё загружена. По этому есть эта функция.
 		virtual void		removeVideoDriver( gtDriver** ) = 0;
 		
+			//	Выделяет память размером size. Для освобождения нужно вызвать freeMemory
+		virtual bool		allocateMemory( void** data, u32 size ) = 0;
+
+			//	Освобождает память, выделенную с помощью allocateMemory
+		virtual void		freeMemory( void** data ) = 0;
+
+			//	Загрузит gtImage, если расширение поддерживается хоть каким-то плагином
+		virtual gtImage*	loadImage( const gtString& fileName ) = 0;
+
+			//	Загрузит gtImage плагином имеющим указанный код
+		virtual gtImage*	loadImage( const gtString& fileName, const gtString& pluginGUID ) = 0;
+
+			//	Удаляет картинку из памяти
+		virtual void		removeImage( gtImage* ) = 0;
+
+			//	возвратит указатель на gtMainSystem
+			//	альтернатива this так как this не работает в статических методах
+		GT_API static gtMainSystem*	getInstance( void );
 	};
 
 }

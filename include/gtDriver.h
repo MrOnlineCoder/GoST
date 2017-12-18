@@ -90,6 +90,8 @@ namespace gost{
 			) = 0;
 
 
+			//	Создаёт текстуру из gtImage. Обязательно нужно в ручную удалить вызвав release()
+		virtual gtTexture*	createTexture( gtImage* ) = 0;
 	};
 
 		//	реализация драйвера в отдельных dll

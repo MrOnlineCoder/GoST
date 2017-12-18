@@ -73,7 +73,7 @@ namespace gost{
 		virtual void	flush( void ) = 0;
 
 			//	чтение
-		virtual void	read( u8 * data, u32 size ) = 0;
+		virtual u32		read( u8 * data, u32 size ) = 0;
 
 			//	размер в байтах
 		virtual u32		size( void ) = 0;
@@ -277,6 +277,10 @@ namespace gost{
 				gtFileSystem::FileAction::EFA_OPEN_NEW );
 		}
 
+		GT_FORCE_INLINE gtPtrNew<gtFile> openFileForReadBin( const gtString& fileName ){
+			return gtFileSystem::createFile( fileName, gtFileSystem::FileMode::EFM_BINARY, gtFileSystem::FileAccessMode::EFAM_READ, 
+				gtFileSystem::FileAction::EFA_OPEN );
+		}
 	}
 
 

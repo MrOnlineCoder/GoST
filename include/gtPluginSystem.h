@@ -12,73 +12,19 @@ namespace gost{
 	
 	class gtMainSystem;
 
-		//	тип плагина
-	enum class gtPluginType{
-
-		//	плагины должны быть правильно инициализированы
-		unknown,
-
-		//	рендер
-		render,
-
-		//	импортёр картинок
-		import_image,
-
-		//	импортёр моделей
-		import_model
-
-		// для начала хватит
-	};
-
-		//	общая информация о плагине
-	struct gtPluginInfo{
-		gtPluginInfo( void ):
-			m_type( gtPluginType::unknown )
-		{
-				//	нельзя выделять память в одном модуле и освобождать в другом
-				//	выход за пределы - на совести разработчика плагина
-			m_name.reserve( 64u );
-			m_author.reserve( 64u );
-			m_url.reserve( 64u );
-			m_email.reserve( 64u );
-			m_company.reserve( 64u );
-			m_description.reserve( 512u );
-			m_GUID.reserve( 64u );
-		}
-
-		//	тип плагина
-		gtPluginType m_type;
-
-		//	название плагина
-		gtString m_name;
-
-		//	автор
-		gtString m_author;
-
-		//	ссылка на сайт
-		gtString m_url;
-
-		//	контактный имейл
-		gtString m_email;
-
-		//	имя компании если юр лицо
-		gtString m_company;
-
-		//	описание
-		gtString m_description;
-
-		//	уникальный ID. по сути любая строка.
-		//	имя по аналогии с GUID. {41B20362-9FC0-4C40-9903-B8D2FF98CF88}
-		gtString m_GUID;
-
-	};
 
 	//	указывается при создании gtDriver
 	const gtString GT_GUID_RENDER_D3D11( u"{41B20362-9FC0-4C40-9903-B8D2FF98CF88}" );
+	
+	//	указывается при точном выборе плагина загрузки картинок
+	const gtString GT_GUID_IMPORT_IMAGE_BMP( u"{B0904D7B-5AA3-4023-BC99-ECA2232E1EBE}" );
 
 	//	для загрузки функций из плагинов
 	using gtGetPluginInfo = void(*)(gtPluginInfo&);
 	using gtLoadGPUDriver_t = gtDriver*(*)(gtMainSystem*,gtDriverInfo);
+	using gtPluginGetExtCount_t = u32(*)( void );
+	using gtPluginGetExtension_t = s8*(*)( u32 id );
+	using gtPluginLoadImage_t = bool(*)(gtImage*,gtString*);
 
 		//	Интерфейс для работы с плагинами
 	class gtPluginSystem : public gtRefObject{
