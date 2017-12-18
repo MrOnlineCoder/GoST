@@ -132,6 +132,18 @@
     <ClInclude Include="..\include\gtVertex.h">
       <Filter>gost</Filter>
     </ClInclude>
+    <ClInclude Include="gtPluginRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtPlugin.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="gtPluginImportImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtString.h">
+      <Filter>gost</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -174,6 +186,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gtDriverCommon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtPluginRender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtPluginImportImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

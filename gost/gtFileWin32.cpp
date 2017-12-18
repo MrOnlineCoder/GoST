@@ -86,7 +86,7 @@ m_pointerPosition( 0u )
 
 gtFileWin32::~gtFileWin32( void ){
 	if( m_handle ){
-		this->flush();
+	//	this->flush();
 
 		CloseHandle( m_handle );
 		m_handle = nullptr;
@@ -170,10 +170,10 @@ void	gtFileWin32::flush( void ){
 }
 
 	//	чтение
-void	gtFileWin32::read( u8 * data, u32 size ){
+u32	gtFileWin32::read( u8 * data, u32 size ){
 	GT_ASSERT1( (m_desiredAccess & GENERIC_READ), "Can not read from file.", "File open in WRITE_ONLY mode" );
 	if( m_handle ){
-		DWORD readBytesNum;
+		DWORD readBytesNum = 0u;
 		if( ReadFile(	m_handle,
 						data, size,
 						&readBytesNum,
@@ -181,7 +181,9 @@ void	gtFileWin32::read( u8 * data, u32 size ){
 			) == FALSE ){
 			gtLogWriter::printWarning( u"Can not read file. Error code [%u]", GetLastError() );
 		}
+		return readBytesNum;
 	}
+	return 0u;
 }
 
 	//	размер в байтах

@@ -41,6 +41,10 @@ void gtMainSystemCommon::initStackTracer( void ){
 gtMainSystemCommon*	gtMainSystemCommon::getInstance( void ){
 	return s_instance;
 }
+
+gtMainSystem*	gtMainSystem::getInstance( void ){
+	return gtMainSystemCommon::getInstance();
+}
 			
 	//	возвратит StackTracer
 gtStackTrace*	gtMainSystemCommon::getStackTracer( void ){
@@ -61,6 +65,44 @@ gtDriver* gtMainSystemCommon::createVideoDriver( const gtDriverInfo& params ){
 void gtMainSystemCommon::removeVideoDriver( gtDriver** pDriver ){
 	m_pluginSystem->unloadRenderPlugin( *pDriver );
 	*pDriver = nullptr;
+}
+
+	//	Выделяет память размером size. Для освобождения нужно вызвать freeMemory
+bool gtMainSystemCommon::allocateMemory( void** data, u32 size ){
+	GT_ASSERT1( !(*data), "Memory block is not free or pointer not set nullptr", "*data==nullptr" );
+	*data = std::malloc( size );
+	return (*data)?true:false;
+}
+
+	//	Освобождает память, выделенную с помощью allocateMemory
+void gtMainSystemCommon::freeMemory( void** data ){
+	GT_ASSERT1( *data, "Memory block is not allocated or set nullptr", "*data!=nullptr" );
+	std::free( *data );
+	*data = nullptr;
+}
+
+	//	Загрузит gtImage, если расширение поддерживается хоть каким-то плагином
+gtImage*	gtMainSystemCommon::loadImage( const gtString& fileName ){
+	gtPtr<gtImage> image = gtPtrNew<gtImage>( this->m_pluginSystem->importImage( fileName ) );
+	if( !image.data() ) return nullptr;
+	image->addRef();
+	return image.data();
+}
+
+	//	Загрузит gtImage плагином имеющим указанный код
+gtImage*	gtMainSystemCommon::loadImage( const gtString& fileName, const gtString& pluginGUID ){
+	gtPtr<gtImage> image = gtPtrNew<gtImage>( this->m_pluginSystem->importImage( fileName, pluginGUID, true ) );
+	if( !image.data() ) return nullptr;
+	image->addRef();
+	return image.data();
+}
+
+	//	Удаляет картинку из памяти
+void		gtMainSystemCommon::removeImage( gtImage* image ){
+	if( image ){
+		image->release();
+		image = nullptr;
+	}
 }
 
 /*

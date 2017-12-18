@@ -54,6 +54,7 @@ void gtPluginSystemImpl::scanFolder( const gtString& dir ){
 
 				gtPluginInfo pi;
 				f_GetPluginInfo( pi );
+
 				
 				//	пока добавляется только общая информация
 				pi_dl.m_path.assign((char16_t*)o->path);
@@ -61,19 +62,34 @@ void gtPluginSystemImpl::scanFolder( const gtString& dir ){
 				
 				if( pi.m_type == gtPluginType::unknown ){
 					gtLogWriter::printWarning( u"Unsupported plugin [%s]", o->path );
+				}else{
+					gtLogWriter::printInfo( u"Add plugin: %s", pi.m_name.data() );
+					gtLogWriter::printInfo( u"Description: %s", pi.m_description.data() );
+				}
+				
+				if( pi.m_type == gtPluginType::unknown ){
 				}else if( pi.m_type == gtPluginType::render ){
+					
+					gtPtr<gtPluginRender> plugin = gtPtrNew<gtPluginRender>( new gtPluginRender( &pi_dl ) );
+
+					if( !plugin->checkLibraryFunctions( lib ) )
+						continue;
+										
 					m_numOfPlugins++;
 
-					gtLoadGPUDriver_t gtLoadGPUDriver = 	(gtLoadGPUDriver_t)GT_LOAD_FUNCTION(lib,"gtLoadGPUDriver");
-					if( !gtLoadGPUDriver ){
-						gtLogWriter::printWarning( u"Can not get procedure address [%s] from plugin [%s]", u"gtLoadGPUDriver", o->path );
-						GT_FREE_LIBRARY( lib );
-						continue;
-					}
-										
-					this->m_renderPluginCache.push_back( pi_dl );
-				}
+					this->m_renderPluginCache.push_back( plugin.data() );
 
+				}else if( pi.m_type == gtPluginType::import_image ){
+
+					gtPtr<gtPluginImportImage> plugin = gtPtrNew<gtPluginImportImage>( new gtPluginImportImage( &pi_dl ) );
+
+					if( !plugin->checkLibraryFunctions(lib))
+						continue;
+
+					m_numOfPlugins++;
+
+					this->m_importImagePluginCache.push_back( plugin.data() );
+				}
 
 				GT_FREE_LIBRARY( lib );
 
@@ -120,14 +136,11 @@ gtDriver*	gtPluginSystemImpl::loadRenderPlugin( const gtDriverInfo& params ){
 
 	for( u32 i = 0u; i < sz; ++i ){
 		auto * o = &m_renderPluginCache[ i ];
-		if( o->m_info.m_GUID == params.m_GUID ){
-
-			gtPtr<gtPluginRender> render = gtPtrNew<gtPluginRender>( new gtPluginRender( o ) );
-			render->load( params );
+		if( o->data()->getInfo().m_info.m_GUID == params.m_GUID ){
 			
-			m_renderPlugins.add( render.data() );
-
-			return render->m_driver;
+			o->data()->loadDriver( params );
+			
+			return o->data()->m_driver[ o->data()->m_driver.size() - 1u ].driver;
 		}
 	}
 	
@@ -136,66 +149,66 @@ gtDriver*	gtPluginSystemImpl::loadRenderPlugin( const gtDriverInfo& params ){
 }
 
 void gtPluginSystemImpl::unloadRenderPlugin( gtDriver* d ){
-	u32 sz = m_renderPlugins.size();
+	u32 sz = m_renderPluginCache.size();
 
 	for( u32 i = 0u; i < sz; ++i ){
-		auto  o = m_renderPlugins.get( i );
+		auto * o = &m_renderPluginCache[ i ];
 
-		if( o->m_driver == d ){
-			o->unload();
-			m_renderPlugins.remove( o );
-			break;
+		for( u32 j = 0u; j < o->data()->m_driver.size(); ++j ){
+			if( o->data()->m_driver[ j ].driver == d ){
+				o->data()->unloadDriver( j );
+				break;
+			}
 		}
-
 	}
 }
 
-void gtPluginRender::load( const gtDriverInfo& params ){
-	if( !m_isLoad ){
+	//	загружает картинку
+gtImage * gtPluginSystemImpl::importImage( const gtString& fileName, const gtString& guid, bool useguid){
 
-		if( m_info.m_handle )
-			GT_FREE_LIBRARY( m_info.m_handle );
+	if( !gtFileSystem::existFile( fileName ) ){
+		gtLogWriter::printWarning( u"Can not load image [%s]. File not exist.", fileName.data() );
+		return nullptr;
+	}
 
-		m_info.m_handle	=	GT_LOAD_LIBRARY( (wchar_t*)m_info.m_path.data() );
+	gtString file = fileName;
+	util::stringFlipSlash( file );
+	
+	gtString ext = util::stringGetExtension( file );
+	util::stringToLower( ext );
+	
+	gtImage * image = new gtImage;
 
-		if( !m_info.m_handle ){
-			gtLogWriter::printWarning( u"Can not load plugin [%s]", m_info.m_path.data() );
-			return;
-		}
+	u32 sz = this->m_importImagePluginCache.size();
+	for( u32 i = 0u; i < sz; ++i ){
+		auto * o = &this->m_importImagePluginCache[ i ];
 
-		gtLoadGPUDriver_t loadProc = (gtLoadGPUDriver_t)GT_LOAD_FUNCTION( m_info.m_handle, "gtLoadGPUDriver" );
-		if( !loadProc ){
-			gtLogWriter::printWarning( u"Can not get procedure address [%s] from plugin [%s]", u"gtLoadGPUDriver", m_info.m_path.data() );
-			GT_FREE_LIBRARY( m_info.m_handle );
-			return;
-		}
-				
-		m_info.m_loadPlugin = (void(*)())loadProc;
-
-		m_driver = ((gtLoadGPUDriver_t)m_info.m_loadPlugin)( gtMainSystemCommon::getInstance(), params );
-
-		if( m_driver ){
-		//	setHandle( m_driver.data(), m_info.m_handle );
-			m_isLoad = true;
-
+		if( useguid ){
+			if( o->data()->getInfo().m_info.m_GUID == guid ){
+				o->data()->load();
+				o->data()->loadImage( &file, &image );
+				break;
+			}
 		}else{
-			GT_FREE_LIBRARY( m_info.m_handle );
+			u32 esz = o->data()->m_extensions.size();
+			for( u32 j = 0u; j < esz; ++j ){
+				if( o->data()->m_extensions[ j ] == ext ){
+					o->data()->load();
+					o->data()->loadImage( &file, &image );
+					if( image->data ) break;
+				}
+			}
 		}
+
 	}
-}
 
-void gtPluginRender::unload( void ){
-	if( m_isLoad ){
-
-		if( m_driver )
-			m_driver->release();
-			m_driver = nullptr;
-
-		GT_FREE_LIBRARY( m_info.m_handle );
-		m_info.m_handle = nullptr;
-
-		m_isLoad = false;
+	if( image->data ){
+		gtLogWriter::printInfo(u"Loading image: %s", fileName.data());
+		return image;
 	}
+
+	delete image;
+	return nullptr;
 }
 
 /*

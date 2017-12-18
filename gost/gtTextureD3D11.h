@@ -1,45 +1,14 @@
-//	GOST
+//GoST
 
 #pragma once
-#ifndef __GT_PLUGIN_SYSTEM_IMPL_H__
-#define __GT_PLUGIN_SYSTEM_IMPL_H__
 
-namespace gost{
+#ifndef __GT_TEXTURE_D3D11_H__
+#define __GT_TEXTURE_D3D11_H__
 
-	class gtPluginRender;
-	class gtPluginImportImage;
-	class gtPluginSystemImpl GT_FINAL : public gtPluginSystem{
 
-		void scanFolder( const gtString& );
-
-		u32 m_numOfPlugins;
-
-		gtArray<gtPtr<gtPluginRender>> m_renderPluginCache;
-		gtArray<gtPtr<gtPluginImportImage>> m_importImagePluginCache;
-		
-	public:
-		gtPluginSystemImpl( void );
-		virtual ~gtPluginSystemImpl( void );
-
-		bool init( void );
-
-			//	получить количество плагинов в папке plugins
-		u32	getNumOfPlugins( void );
-
-			//	загружает видео плагин
-		gtDriver*	loadRenderPlugin( const gtDriverInfo& params );
-
-			//	выгружает и удаляет из коллекции
-		void 		unloadRenderPlugin( gtDriver* );
-
-			//	загружает картинку
-		gtImage *	importImage( const gtString& fileName, const gtString& guid = gtString(), bool useguid = false );
-
-	};
-
-}
 
 #endif
+
 
 /*
 Copyright (c) 2017 532235

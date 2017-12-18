@@ -41,7 +41,7 @@ namespace gost{
 		void	flush( void );
 
 			//	чтение
-		void	read( u8 * data, u32 size );
+		u32		read( u8 * data, u32 size );
 
 			//	размер в байтах
 		u32		size( void );

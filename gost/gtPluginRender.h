@@ -1,45 +1,67 @@
 //	GOST
 
 #pragma once
-#ifndef __GT_PLUGIN_SYSTEM_IMPL_H__
-#define __GT_PLUGIN_SYSTEM_IMPL_H__
+#ifndef __GT_PLUGIN_RENDER_H__
+#define __GT_PLUGIN_RENDER_H__
+
 
 namespace gost{
 
-	class gtPluginRender;
-	class gtPluginImportImage;
-	class gtPluginSystemImpl GT_FINAL : public gtPluginSystem{
-
-		void scanFolder( const gtString& );
-
-		u32 m_numOfPlugins;
-
-		gtArray<gtPtr<gtPluginRender>> m_renderPluginCache;
-		gtArray<gtPtr<gtPluginImportImage>> m_importImagePluginCache;
-		
+	/*
+		Ёто обЄртка к render плагину.
+		’ранит информацию.
+		Ѕлагодор€ этому можно грузить и выгружать плагин 
+		использу€ методы load unload
+	*/
+	class gtPluginRender : public gtPlugin{
 	public:
-		gtPluginSystemImpl( void );
-		virtual ~gtPluginSystemImpl( void );
 
-		bool init( void );
+		gtPluginRender( gtPluginInfoDL* info );
 
-			//	получить количество плагинов в папке plugins
-		u32	getNumOfPlugins( void );
+		~gtPluginRender( void );
+		
+		struct Driver{
 
-			//	загружает видео плагин
-		gtDriver*	loadRenderPlugin( const gtDriverInfo& params );
+			Driver( void (*f)(), gtDriver* d ):
+				loadPlugin( f ),
+				driver( d )
+			{}
 
-			//	выгружает и удал€ет из коллекции
-		void 		unloadRenderPlugin( gtDriver* );
+			//	указатель на функцию
+			//	render плагин - указывает на функцию запуска.
+			void (*loadPlugin)();
 
-			//	загружает картинку
-		gtImage *	importImage( const gtString& fileName, const gtString& guid = gtString(), bool useguid = false );
+				//	видео драйвера данного плагина
+			gtDriver* driver;
 
+		};
+
+		gtArray<Driver> m_driver;
+
+			//	загрузить плагин
+		void loadDriver( const gtDriverInfo& params );
+
+			//	выгрузить драйвер под номером id
+		void unloadDriver( u32 id );
+
+			//	загрузить плагин
+		void load( void );
+
+			//	выгрузитьплагин
+		void unload( void );
+
+		const gtPluginInfoDL&	getInfo( void );
+
+			//	проверит есть ли нужные функции в плагине
+		bool checkLibraryFunctions( GT_LIBRARY_HANDLE );
 	};
 
 }
 
+
 #endif
+
+
 
 /*
 Copyright (c) 2017 532235

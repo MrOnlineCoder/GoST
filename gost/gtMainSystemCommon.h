@@ -67,6 +67,23 @@ namespace gost{
 
 			//	Завершает работу видео драйвера
 		void		removeVideoDriver( gtDriver** );
+
+			//	Выделяет память размером size. Для освобождения нужно вызвать freeMemory
+		bool	allocateMemory( void** data, u32 size );
+
+			//	Освобождает память, выделенную с помощью allocateMemory
+		void	freeMemory( void** data );
+
+		
+			//	Загрузит gtImage, если расширение поддерживается хоть каким-то плагином
+		gtImage*	loadImage( const gtString& fileName );
+
+			//	Загрузит gtImage плагином имеющим указанный код
+		gtImage*	loadImage( const gtString& fileName, const gtString& pluginGUID );
+
+			//	Удаляет картинку из памяти
+		void		removeImage( gtImage* );
+
 	};
 
 #define gtLog gtMainSystemCommon::s_loger

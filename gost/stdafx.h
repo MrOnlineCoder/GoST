@@ -38,7 +38,8 @@ using namespace gost;
 
 #include "gtPluginSystemImpl.h"
 
-#include "gtDriverCommon.h"
+#include "gtPluginRender.h"
+#include "gtPluginImportImage.h"
 
 #include "gtMainSystemCommon.h"
 #include "gtMainSystemWin32.h"

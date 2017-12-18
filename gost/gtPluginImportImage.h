@@ -1,45 +1,44 @@
 //	GOST
 
+
 #pragma once
-#ifndef __GT_PLUGIN_SYSTEM_IMPL_H__
-#define __GT_PLUGIN_SYSTEM_IMPL_H__
+#ifndef __GT_PLUGIN_IMPORT_IMAGE_H__
+#define __GT_PLUGIN_IMPORT_IMAGE_H__
 
 namespace gost{
 
-	class gtPluginRender;
-	class gtPluginImportImage;
-	class gtPluginSystemImpl GT_FINAL : public gtPluginSystem{
-
-		void scanFolder( const gtString& );
-
-		u32 m_numOfPlugins;
-
-		gtArray<gtPtr<gtPluginRender>> m_renderPluginCache;
-		gtArray<gtPtr<gtPluginImportImage>> m_importImagePluginCache;
-		
+	/*
+	*/
+	class gtPluginImportImage : public gtPlugin{
+		gtPluginLoadImage_t f_loadImage;
 	public:
-		gtPluginSystemImpl( void );
-		virtual ~gtPluginSystemImpl( void );
 
-		bool init( void );
+		gtPluginImportImage( gtPluginInfoDL* info );
 
-			//	получить количество плагинов в папке plugins
-		u32	getNumOfPlugins( void );
+		~gtPluginImportImage( void );
+		
+			//	загрузить плагин
+		void load( void );
 
-			//	загружает видео плагин
-		gtDriver*	loadRenderPlugin( const gtDriverInfo& params );
+			//	выгрузитьплагин
+		void unload( void );
 
-			//	выгружает и удаляет из коллекции
-		void 		unloadRenderPlugin( gtDriver* );
+		const gtPluginInfoDL&	getInfo( void );
 
-			//	загружает картинку
-		gtImage *	importImage( const gtString& fileName, const gtString& guid = gtString(), bool useguid = false );
+			//	проверит есть ли нужные функции в плагине
+		bool checkLibraryFunctions( GT_LIBRARY_HANDLE );
 
+		gtArray<gtString> m_extensions;
+
+		void loadImage( gtString*, gtImage** );
 	};
 
 }
 
+
 #endif
+
+
 
 /*
 Copyright (c) 2017 532235

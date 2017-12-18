@@ -31,6 +31,9 @@ bool	gtWindowWin32::init( u32 i ){
 			style |= WS_SIZEBOX;
 	}
 
+	
+
+
 	m_className = u"GTWINDOW_";
 	m_className += i;
 

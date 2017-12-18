@@ -162,11 +162,13 @@
     <ClInclude Include="..\include\gtMainSystem.h" />
     <ClInclude Include="..\include\gtMaterial.h" />
     <ClInclude Include="..\include\gtOutputWindow.h" />
+    <ClInclude Include="..\include\gtPlugin.h" />
     <ClInclude Include="..\include\gtPluginSystem.h" />
     <ClInclude Include="..\include\gtPtr.h" />
     <ClInclude Include="..\include\gtRefObject.h" />
     <ClInclude Include="..\include\gtShader.h" />
     <ClInclude Include="..\include\gtStackTrace.h" />
+    <ClInclude Include="..\include\gtString.h" />
     <ClInclude Include="..\include\gtTexture.h" />
     <ClInclude Include="..\include\gtTypes.h" />
     <ClInclude Include="..\include\gtUtilities.h" />
@@ -181,6 +183,8 @@
     <ClInclude Include="gtMainSystemCommon.h" />
     <ClInclude Include="gtMainSystemWin32.h" />
     <ClInclude Include="gtOutputWindowWin32.h" />
+    <ClInclude Include="gtPluginImportImage.h" />
+    <ClInclude Include="gtPluginRender.h" />
     <ClInclude Include="gtPluginSystemImpl.h" />
     <ClInclude Include="gtWindowCommon.h" />
     <ClInclude Include="gtWindowWin32.h" />
@@ -211,6 +215,8 @@
     <ClCompile Include="gtMainSystemCommon.cpp" />
     <ClCompile Include="gtMainSystemWin32.cpp" />
     <ClCompile Include="gtOutputWindowWin32.cpp" />
+    <ClCompile Include="gtPluginImportImage.cpp" />
+    <ClCompile Include="gtPluginRender.cpp" />
     <ClCompile Include="gtPluginSystemImpl.cpp" />
     <ClCompile Include="gtWindowCommon.cpp" />
     <ClCompile Include="gtWindowWin32.cpp" />
