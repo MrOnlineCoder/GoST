@@ -113,13 +113,10 @@ void ScanDirs( gtString dir, bool subDir ){
 
 
 #if defined( GT_PLATFORM_WIN32 )
-#include <Windows.h>
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ){
 #endif
-	 
-	
-		
-	    gtDeviceCreationParameters params;
+			
+    gtDeviceCreationParameters params;
  
     gtPtr<gtMainSystem> my_system( gtPtrNew<gtMainSystem>( InitializeGoSTEngine(params) ) );
     
@@ -132,6 +129,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
     wi.m_style = gtWindowInfo::_standart;
     wi.m_style |= gtWindowInfo::_maximize;
     wi.m_style |= gtWindowInfo::_resize;
+	wi.m_rect.set({0,0,200,200});
  
     window1 = gtPtrNew<gtWindow>( my_system->createSystemWindow( wi ) );
  
@@ -141,8 +139,19 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
     
     vparams.m_outWindow = window1.data();
     gtDriver* driver1 = my_system->createVideoDriver( vparams );
- 
+
+
+
+	gtImage * image = my_system->loadImage( gtFileSystem::getProgramPath() + u"bmp24bit.bmp" );
+	
+	// если без gtPtr, то в конце нужно вызвать texture->release();
+	gtPtr<gtTexture> texture = gtPtrNew<gtTexture>( driver1->createTexture( image ) );
+
+	/* software картинка больше не нужна */
+	my_system->removeImage( image );
+	
 	gtMaterial material;
+	material.textureLayer[ 0u ].texture = texture.data();
 
     while( my_system->update() ){
  
@@ -153,6 +162,9 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         }
  
     }
+
+//	if( texture )
+	//	texture->release();
 
     return 0;
 }
