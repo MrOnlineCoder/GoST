@@ -71,6 +71,11 @@ namespace gost{
 			//	rect - координаты левого верхнего и правого нижнего углов
 		virtual void draw2DImage( const v4f& rect, const gtMaterial& ) = 0;
 
+			//	нарисует картинку с выбранной областью текстуры
+			//	rect - координаты левого верхнего и правого нижнего углов
+			//	region - координаты левого верхнего и правого нижнего углов области картинки которую нужно нарисовать
+		virtual void draw2DImage( const v4f& rect, const v4f& region, const gtMaterial& ) = 0;
+
 		virtual void *	getPluginHandle( void ) = 0;
 
 			//	компилировать либо получить ранее скомпилированный шейдер
