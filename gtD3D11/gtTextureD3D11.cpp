@@ -1,4 +1,4 @@
-//	GOST
+﻿//	GOST
 
 #include "stdafx.h"
 
@@ -85,6 +85,9 @@ bool gtTextureD3D11::init( gtImage* image ){
 		return false;
 	}
 
+	m_size[ 0u ] = image->width;
+	m_size[ 1u ] = image->height;
+
 	return true;
 }
 
@@ -114,9 +117,17 @@ HRESULT	gtTextureD3D11::createSamplerState( D3D11_FILTER filter, D3D11_TEXTURE_A
 }
 
 //===============================================================
-	//	��������� ��� ��������
+	//	возвратит тип текстуры
 gtTextureType	gtTextureD3D11::getType( void ){
 	return m_type;
+}
+	//	получить ширину
+u32				gtTextureD3D11::getWidth( void ){
+	return this->m_size[ 0u ];
+}
+	//	получить высоту
+u32				gtTextureD3D11::getHeight( void ){
+	return this->m_size[ 1u ];
 }
 
 /*
