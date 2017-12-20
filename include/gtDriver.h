@@ -71,6 +71,7 @@ namespace gost{
 			//	rect - координаты левого верхнего и правого нижнего углов
 		virtual void draw2DImage( const v4f& rect, const gtMaterial& ) = 0;
 
+			//	Render 2d image using region of texture
 			//	нарисует картинку с выбранной областью текстуры
 			//	rect - координаты левого верхнего и правого нижнего углов
 			//	region - координаты левого верхнего и правого нижнего углов области картинки которую нужно нарисовать
@@ -107,7 +108,10 @@ namespace gost{
 
 			//	параметры запуска
 		gtDriverInfo m_params;
-			
+		
+			//	текущий размер окна
+		v2i			m_currentWindowSize;
+
 			/*временно*/
 		void * m_handle;
 
@@ -116,6 +120,7 @@ namespace gost{
 		gtDriverCommon( void ):
 			m_handle(nullptr)
 		{
+			m_currentWindowSize = m_params.m_backBufferSize;
 		}
 
 		virtual ~gtDriverCommon( void ){
@@ -129,6 +134,11 @@ namespace gost{
 
 		virtual void *	getPluginHandle( void ){
 			return m_handle;
+		}
+
+			//	получить текущий размер окна
+		virtual const v2i&	getСurrentWindowSize( void ) const {
+			return m_currentWindowSize;
 		}
 
 		/*временно*/
