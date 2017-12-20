@@ -27,6 +27,12 @@ namespace gost{
 			//	возвратит тип текстуры
 		virtual gtTextureType	getType( void ) = 0;
 
+			//	получить ширину
+		virtual u32				getWidth( void ) = 0;
+
+			//	получить высоту
+		virtual u32				getHeight( void ) = 0;
+
 	};
 
 
