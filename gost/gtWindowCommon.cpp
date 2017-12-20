@@ -1,10 +1,15 @@
-//	GOST
+﻿//	GOST
 
 #include "stdafx.h"
 
 gtWindowCommon::gtWindowCommon( void ){}
 
 gtWindowCommon::~gtWindowCommon( void ){
+}
+
+	//	Получить координаты левого верхнего и правого нижнего углов
+const v4i&		gtWindowCommon::getRect( void ){
+	return m_params.m_rect;
 }
 
 /*

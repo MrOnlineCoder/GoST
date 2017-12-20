@@ -1,4 +1,4 @@
-//	GOST
+﻿//	GOST
 
 #pragma once
 #ifndef __GT_WINDOW_COMMON_H__
@@ -10,7 +10,7 @@ namespace gost{
 
 	protected:
 
-			//	��������� ����
+			//	параметры окна
 		gtWindowInfo m_params;
 
 	public:
@@ -20,6 +20,8 @@ namespace gost{
 			// dtor
 		virtual ~gtWindowCommon( void );
 
+			//	Получить координаты левого верхнего и правого нижнего углов
+		const v4i&		getRect( void );
 
 	};
 
