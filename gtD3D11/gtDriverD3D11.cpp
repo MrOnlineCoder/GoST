@@ -1,4 +1,4 @@
-//GoST
+п»ї//GoST
 
 #include "stdafx.h"
 
@@ -21,6 +21,12 @@ gtDriverD3D11::gtDriverD3D11( gtMainSystem* System, gtDriverInfo params ):
 	m_shader2DStandart( nullptr )
 {
 	m_params =  params;
+	
+	if( params.m_outWindow ){
+		m_currentWindowSize[ 0u ] = params.m_outWindow->getRect().getComponent( 2u );
+		m_currentWindowSize[ 1u ] = params.m_outWindow->getRect().getComponent( 3u );
+	}
+
 #ifdef GT_DEBUG
 	this->setDebugName( u"DriverD3D11" );
 #endif
@@ -313,7 +319,7 @@ bool gtDriverD3D11::initialize( void ){
 	viewport.TopLeftY	=	0.0f;
 	m_d3d11DevCon->RSSetViewports( 1, &viewport );
 
-	//	в будущем стандартные шейдеры нужно убрать внутрь плагина
+	//	РІ Р±СѓРґСѓС‰РµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ С€РµР№РґРµСЂС‹ РЅСѓР¶РЅРѕ СѓР±СЂР°С‚СЊ РІРЅСѓС‚СЂСЊ РїР»Р°РіРёРЅР°
 	gtShaderModel shaderModel;
 	shaderModel.pixelShaderModel = gtShaderModel::shaderModel::_5_0;
 	shaderModel.vertexShaderModel = gtShaderModel::shaderModel::_5_0;
@@ -334,7 +340,7 @@ bool gtDriverD3D11::initialize( void ){
 		);
 	if( m_shader2DStandart ){
 
-		//	создание константного буффера.
+		//	СЃРѕР·РґР°РЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚РЅРѕРіРѕ Р±СѓС„С„РµСЂР°.
 		if( !m_shader2DStandart->createShaderObject( 96u ) ) return false;
 	}
 
@@ -368,15 +374,85 @@ void gtDriverD3D11::endRender( void ){
 	}
 }
 
-	//	нарисует картинку
-	//	rect - координаты левого верхнего и правого нижнего углов
-void gtDriverD3D11::draw2DImage( const v4f& rect, const gtMaterial& material ){
+	//	РЅР°СЂРёСЃСѓРµС‚ РєР°СЂС‚РёРЅРєСѓ
+	//	rect - РєРѕРѕСЂРґРёРЅР°С‚С‹ Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ Рё РїСЂР°РІРѕРіРѕ РЅРёР¶РЅРµРіРѕ СѓРіР»РѕРІ
+void gtDriverD3D11::draw2DImage( const v4i& rect, const gtMaterial& m ){
+	draw2DImage( rect, v4i(), m );
+}
+	//	Render 2d image using region of texture
+	//	РЅР°СЂРёСЃСѓРµС‚ РєР°СЂС‚РёРЅРєСѓ СЃ РІС‹Р±СЂР°РЅРЅРѕР№ РѕР±Р»Р°СЃС‚СЊСЋ С‚РµРєСЃС‚СѓСЂС‹
+	//	rect - РєРѕРѕСЂРґРёРЅР°С‚С‹ Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ Рё РїСЂР°РІРѕРіРѕ РЅРёР¶РЅРµРіРѕ СѓРіР»РѕРІ
+	//	region - РєРѕРѕСЂРґРёРЅР°С‚С‹ Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ Рё РїСЂР°РІРѕРіРѕ РЅРёР¶РЅРµРіРѕ СѓРіР»РѕРІ РѕР±Р»Р°СЃС‚Рё РєР°СЂС‚РёРЅРєРё РєРѕС‚РѕСЂСѓСЋ РЅСѓР¶РЅРѕ РЅР°СЂРёСЃРѕРІР°С‚СЊ
+void gtDriverD3D11::draw2DImage( const v4i& rect, const v4i& region, const gtMaterial& m ){
+
+	v2i center( { m_currentWindowSize[ 0u ] / 2, m_currentWindowSize[ 1u ] / 2 } );
+
+	v4f realRect;
+	realRect[ 0u ] = f32(rect[ 0u ] - center[ 0u ] ) / (f32)center[ 0u ];
+	realRect[ 1u ] = (f32(rect[ 1u ] - center[ 1u ] ) * -1.f )/(f32)center[ 1u ];
+	realRect[ 2u ] = (rect[ 2u ] - center[ 0u ] ) / (f32)center[ 0u ];
+	realRect[ 3u ] = (f32(rect[ 3u ] - center[ 1u] ) * -1.f )/(f32)center[ 1u ];
+
+
+	/*
+	2-------3
+	|		|
+	|		|
+	1-------4
+	*/
+
 	
+	v2f lt, rb;
+
+	if( v4i() == region ){ // СЃСЂР°РІРЅРµРЅРёРµ СЃ РїСѓСЃС‚С‹Рј РІРµРєС‚РѕСЂРѕРј. РµСЃР»Рё РїСѓСЃС‚РѕР№ С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ.
+		lt[ 0u ] = 0.f;
+		lt[ 1u ] = 0.f;
+		rb[ 0u ] = 1.f;
+		rb[ 1u ] = 1.f;
+
+	}else{
+		GT_ASSERT2( m.textureLayer[ 0u ].texture, "texture != nullptr" );
+
+		u32 width = m.textureLayer[ 0u ].texture->getWidth();
+		u32 height = m.textureLayer[ 0u ].texture->getHeight();
+
+		f32 mulX = 1.f / (f32)width;
+		f32 mulY = 1.f / (f32)height;
+
+		lt[ 0u ] = region[ 0u ] * mulX;
+		lt[ 1u ] = region[ 1u ] * mulY;
+		rb[ 0u ] = region[ 2u ] * mulX;
+		rb[ 1u ] = region[ 3u ] * mulY;
+
+	
+	}
+
+	v8f uvs;
+	uvs[ 0u ] = lt[ 0u ]; // 1
+	uvs[ 1u ] = rb[ 1u ];
+
+	uvs[ 2u ] = lt[ 0u ]; // 2
+	uvs[ 3u ] = lt[ 1u ];
+
+	uvs[ 4u ] = rb[ 0u ]; // 3
+	uvs[ 5u ] = lt[ 1u ];
+
+	uvs[ 6u ] = rb[ 0u ]; // 4
+	uvs[ 7u ] = rb[ 1u ];
+	
+	_draw2DImage( realRect, uvs, m );
+}
+
+	//	РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ СЂРёСЃСѓРµС‚ РєР°СЂС‚РёРЅРєСѓ
+void gtDriverD3D11::_draw2DImage( const v4f& rect, const v8f& region, const gtMaterial& material ){
+
 	gtShader * shader = material.shader;
 	if( !shader ){
 		shader = m_shader2DStandart;
 	}
-		
+
+	setActiveShader( shader );
+
 	struct cbVerts{
 		v4f v1;
 		v4f v2;
@@ -388,40 +464,34 @@ void gtDriverD3D11::draw2DImage( const v4f& rect, const gtMaterial& material ){
 		v2f t4;
 	}cb;
 
-	//	нужно послать в константный буффер координаты
-
-	//	позиция
-	cb.v1[ 0 ] = -1.f;	//x		
-	cb.v1[ 1 ] = -1.f;	//y		
+	cb.v1[ 0 ] = rect[ 0 ];	//x		
+	cb.v1[ 1 ] = rect[ 3 ];	//y		
 	cb.v1[ 2 ] = 0.5f;	//z		*
 	cb.v1[ 3 ] = 1.f;
-	cb.t1[ 0 ] = 0.f;	//u
-	cb.t1[ 1 ] = 1.f;	//v
+	cb.t1[ 0 ] = region[ 0u ];	//u
+	cb.t1[ 1 ] = region[ 1u ];	//v
 
-	cb.v2[ 0 ] = -1.f;	//x		*
-	cb.v2[ 1 ] = 1.f;	//y		|
-	cb.v2[ 2 ] = 0.5f;	//z		*
+	cb.v2[ 0 ] = rect[ 0 ];	//x		*
+	cb.v2[ 1 ] = rect[ 1 ];	//y		|
+	cb.v2[ 2 ] = 0.5f;	//z			*
 	cb.v2[ 3 ] = 1.f;
-	cb.t2[ 0 ] = 0.f;	//u
-	cb.t2[ 1 ] = 0.f;	//v
+	cb.t2[ 0 ] = region[ 2u ];	//u
+	cb.t2[ 1 ] = region[ 3u ];	//v
 
-	cb.v3[ 0 ] = 1.f;	//x		*-----*
-	cb.v3[ 1 ] = 1.f;	//y		|	/
-	cb.v3[ 2 ] = 0.5f;	//z		*/
+	cb.v3[ 0 ] = rect[ 2 ];	//x		*-----*
+	cb.v3[ 1 ] = rect[ 1 ];	//y		|	/
+	cb.v3[ 2 ] = 0.5f;	//z			*/
 	cb.v3[ 3 ] = 1.f;
-	cb.t3[ 0 ] = 1.f;	//u
-	cb.t3[ 1 ] = 0.f;	//v
+	cb.t3[ 0 ] = region[ 4u ];	//u
+	cb.t3[ 1 ] = region[ 5u ];	//v
 
-	cb.v4[ 0 ] = 1.f;	//x		*-----*
-	cb.v4[ 1 ] = -1.f;	//y		|	/
-	cb.v4[ 2 ] = 0.5f;	//z		*/    *
+	cb.v4[ 0 ] = rect[ 2 ];	//x		*-----*
+	cb.v4[ 1 ] = rect[ 3 ];	//y		|	/
+	cb.v4[ 2 ] = 0.5f;		//z		*/    *
 	cb.v4[ 3 ] = 1.f;
-	cb.t4[ 0 ] = 1.f;	//u
-	cb.t4[ 1 ] = 1.f;	//v
-	//индексы указываются в шейдере в ручную с помощью SV_VertexID
+	cb.t4[ 0 ] = region[ 6u ];	//u
+	cb.t4[ 1 ] = region[ 7u ];	//v
 
-	setActiveShader( shader );
-	
 	m_d3d11DevCon->IASetInputLayout( 0 );
 	m_d3d11DevCon->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
@@ -449,27 +519,26 @@ void gtDriverD3D11::draw2DImage( const v4f& rect, const gtMaterial& material ){
 	m_d3d11DevCon->Draw( 6, 0 );
 }
 
-
-	//	компилировать либо получить ранее скомпилированный шейдер
+	//	РєРѕРјРїРёР»РёСЂРѕРІР°С‚СЊ Р»РёР±Рѕ РїРѕР»СѓС‡РёС‚СЊ СЂР°РЅРµРµ СЃРєРѕРјРїРёР»РёСЂРѕРІР°РЅРЅС‹Р№ С€РµР№РґРµСЂ
 gtShader *	gtDriverD3D11::getShader( 
-		//	путь к файлу хранящем вершинный шейдер
+		//	РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ С…СЂР°РЅСЏС‰РµРј РІРµСЂС€РёРЅРЅС‹Р№ С€РµР№РґРµСЂ
 	const gtString& vertexShader,
-		//	главная функция вершинного шейдера, точка входа
+		//	РіР»Р°РІРЅР°СЏ С„СѓРЅРєС†РёСЏ РІРµСЂС€РёРЅРЅРѕРіРѕ С€РµР№РґРµСЂР°, С‚РѕС‡РєР° РІС…РѕРґР°
 	const gtStringA& vertexShaderMain,
-		//	путь к файлу хранящем пиксельный/фрагментный шейдер
+		//	РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ С…СЂР°РЅСЏС‰РµРј РїРёРєСЃРµР»СЊРЅС‹Р№/С„СЂР°РіРјРµРЅС‚РЅС‹Р№ С€РµР№РґРµСЂ
 	const gtString& pixelShader,
-		//	главная функция пиксельного/фрагментного шейдера, точка входа
+		//	РіР»Р°РІРЅР°СЏ С„СѓРЅРєС†РёСЏ РїРёРєСЃРµР»СЊРЅРѕРіРѕ/С„СЂР°РіРјРµРЅС‚РЅРѕРіРѕ С€РµР№РґРµСЂР°, С‚РѕС‡РєР° РІС…РѕРґР°
 	const gtStringA& pixelShaderMain,
-		//	тип шейдерного языка
+		//	С‚РёРї С€РµР№РґРµСЂРЅРѕРіРѕ СЏР·С‹РєР°
 	gtShaderModel shaderModel,
 
 	gtVertexType * vertexType
 ){
-	//	для хранения текста шейдера
+	//	РґР»СЏ С…СЂР°РЅРµРЅРёСЏ С‚РµРєСЃС‚Р° С€РµР№РґРµСЂР°
 	std::unique_ptr<s8[]> vertexBuffer;
 	std::unique_ptr<s8[]> pixelBuffer;
 
-	//	если указан файл то читаем его
+	//	РµСЃР»Рё СѓРєР°Р·Р°РЅ С„Р°Р№Р» С‚Рѕ С‡РёС‚Р°РµРј РµРіРѕ
 	if( gtFileSystem::existFile( vertexShader ) ){
 
 		gtFile_t file = util::openFileForReadText( vertexShader );
@@ -488,7 +557,7 @@ gtShader *	gtDriverD3D11::getShader(
 
 
 	}else{
-		//	если указан не файл, то скорее всего текст шейдера.
+		//	РµСЃР»Рё СѓРєР°Р·Р°РЅ РЅРµ С„Р°Р№Р», С‚Рѕ СЃРєРѕСЂРµРµ РІСЃРµРіРѕ С‚РµРєСЃС‚ С€РµР№РґРµСЂР°.
 		u32 sz = vertexShader.size();
 		if( !sz ){
 			gtLogWriter::printError( u"Empty shader file [%s]", vertexShader.data() );
@@ -616,7 +685,7 @@ gtShader *	gtDriverD3D11::getShader(
 	return shader.data();
 }
 
-	//	Создаёт текстуру из gtImage
+	//	РЎРѕР·РґР°С‘С‚ С‚РµРєСЃС‚СѓСЂСѓ РёР· gtImage
 gtTexture*	gtDriverD3D11::createTexture( gtImage* image ){
 	GT_ASSERT2( image, "image!=nullptr" );
 
