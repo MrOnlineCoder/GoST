@@ -69,13 +69,13 @@ namespace gost{
 
 			//	нарисует картинку
 			//	rect - координаты левого верхнего и правого нижнего углов
-		virtual void draw2DImage( const v4f& rect, const gtMaterial& ) = 0;
+		virtual void draw2DImage( const v4i& rect, const gtMaterial& ) = 0;
 
 			//	Render 2d image using region of texture
 			//	нарисует картинку с выбранной областью текстуры
 			//	rect - координаты левого верхнего и правого нижнего углов
 			//	region - координаты левого верхнего и правого нижнего углов области картинки которую нужно нарисовать
-		virtual void draw2DImage( const v4f& rect, const v4f& region, const gtMaterial& ) = 0;
+		virtual void draw2DImage( const v4i& rect, const v4i& region, const gtMaterial& ) = 0;
 
 		virtual void *	getPluginHandle( void ) = 0;
 
@@ -120,7 +120,6 @@ namespace gost{
 		gtDriverCommon( void ):
 			m_handle(nullptr)
 		{
-			m_currentWindowSize = m_params.m_backBufferSize;
 		}
 
 		virtual ~gtDriverCommon( void ){
