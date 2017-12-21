@@ -44,6 +44,7 @@
 #include <gtShader.h>
 #include <gtMaterial.h>
 
+#include <gtTimer.h>
 
 #include <gtDriver.h>
 
