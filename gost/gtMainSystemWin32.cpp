@@ -27,6 +27,10 @@ namespace gost{
 		//	инициализация системы
 	bool	gtMainSystemWin32::init( void ){
 
+		timeBeginPeriod( 1 );
+		getTime();
+		m_timer = gtPtrNew<gtTimerWin32>( new gtTimerWin32 );
+
 		{		
 			if( !m_params.m_outputWindow ){
 				this->m_output_window = gtPtrNew<gtOutputWindow>( new gtOutputWindowWin32 );
@@ -103,7 +107,20 @@ namespace gost{
 		return window.data();
 	}
 
+	u32			gtMainSystemWin32::getTime( void ){
+		static bool isInit = false;
+		static u32 baseTime;
+		if( !isInit ){
+			baseTime = timeGetTime();
+			isInit = true;
+		}
+		return timeGetTime() - baseTime;
+	}
 
+		//	получит указатель на таймер
+	gtTimer*	gtMainSystemWin32::getTimer( void ){
+		return m_timer.data();
+	}
 }
 /*
 Copyright (c) 2017 532235
