@@ -23,8 +23,8 @@ gtDriverD3D11::gtDriverD3D11( gtMainSystem* System, gtDriverInfo params ):
 	m_params =  params;
 	
 	if( params.m_outWindow ){
-		m_currentWindowSize[ 0u ] = params.m_outWindow->getRect().getComponent( 2u );
-		m_currentWindowSize[ 1u ] = params.m_outWindow->getRect().getComponent( 3u );
+		m_currentWindowSize.x_ = params.m_outWindow->getRect().getComponent( 2u );
+		m_currentWindowSize.y_ = params.m_outWindow->getRect().getComponent( 3u );
 	}
 
 #ifdef GT_DEBUG
@@ -385,13 +385,13 @@ void gtDriverD3D11::draw2DImage( const v4i& rect, const gtMaterial& m ){
 	//	region - координаты левого верхнего и правого нижнего углов области картинки которую нужно нарисовать
 void gtDriverD3D11::draw2DImage( const v4i& rect, const v4i& region, const gtMaterial& m ){
 
-	v2i center( { m_currentWindowSize[ 0u ] / 2, m_currentWindowSize[ 1u ] / 2 } );
+	v2i center( { m_currentWindowSize.x_ / 2, m_currentWindowSize.y_ / 2 } );
 
 	v4f realRect;
-	realRect[ 0u ] = f32(rect[ 0u ] - center[ 0u ] ) / (f32)center[ 0u ];
-	realRect[ 1u ] = (f32(rect[ 1u ] - center[ 1u ] ) * -1.f )/(f32)center[ 1u ];
-	realRect[ 2u ] = (rect[ 2u ] - center[ 0u ] ) / (f32)center[ 0u ];
-	realRect[ 3u ] = (f32(rect[ 3u ] - center[ 1u] ) * -1.f )/(f32)center[ 1u ];
+	realRect.x_ = f32(rect.x_ - center.x_ ) / (f32)center.x_;
+	realRect.y_ = (f32(rect.y_ - center.y_ ) * -1.f )/(f32)center.y_;
+	realRect.z_ = (rect.z_ - center.x_ ) / (f32)center.x_;
+	realRect.w_ = (f32(rect.w_ - center.y_ ) * -1.f )/(f32)center.y_;
 
 
 	/*
@@ -405,10 +405,10 @@ void gtDriverD3D11::draw2DImage( const v4i& rect, const v4i& region, const gtMat
 	v2f lt, rb;
 
 	if( v4i() == region ){ // сравнение с пустым вектором. если пустой то координаты по умолчанию.
-		lt[ 0u ] = 0.f;
-		lt[ 1u ] = 0.f;
-		rb[ 0u ] = 1.f;
-		rb[ 1u ] = 1.f;
+		lt.x_ = 0.f;
+		lt.y_ = 0.f;
+		rb.x_ = 1.f;
+		rb.y_ = 1.f;
 
 	}else{
 		GT_ASSERT2( m.textureLayer[ 0u ].texture, "texture != nullptr" );
@@ -419,26 +419,26 @@ void gtDriverD3D11::draw2DImage( const v4i& rect, const v4i& region, const gtMat
 		f32 mulX = 1.f / (f32)width;
 		f32 mulY = 1.f / (f32)height;
 
-		lt[ 0u ] = region[ 0u ] * mulX;
-		lt[ 1u ] = region[ 1u ] * mulY;
-		rb[ 0u ] = region[ 2u ] * mulX;
-		rb[ 1u ] = region[ 3u ] * mulY;
+		lt.x_ = region.x_ * mulX;
+		lt.y_ = region.y_ * mulY;
+		rb.x_ = region.z_ * mulX;
+		rb.y_ = region.w_ * mulY;
 
 	
 	}
 
 	v8f uvs;
-	uvs[ 0u ] = lt[ 0u ]; // 1
-	uvs[ 1u ] = rb[ 1u ];
+	uvs.x_ = lt.x_; // 1
+	uvs.y_ = rb.y_;
 
-	uvs[ 2u ] = lt[ 0u ]; // 2
-	uvs[ 3u ] = lt[ 1u ];
+	uvs.z_ = lt.x_; // 2
+	uvs.w_ = lt.y_;
 
-	uvs[ 4u ] = rb[ 0u ]; // 3
-	uvs[ 5u ] = lt[ 1u ];
+	uvs[ 4u ] = rb.x_; // 3
+	uvs[ 5u ] = lt.y_;
 
-	uvs[ 6u ] = rb[ 0u ]; // 4
-	uvs[ 7u ] = rb[ 1u ];
+	uvs[ 6u ] = rb.x_; // 4
+	uvs[ 7u ] = rb.y_;
 	
 	_draw2DImage( realRect, uvs, m );
 }
@@ -464,33 +464,33 @@ void gtDriverD3D11::_draw2DImage( const v4f& rect, const v8f& region, const gtMa
 		v2f t4;
 	}cb;
 
-	cb.v1[ 0 ] = rect[ 0 ];	//x		
-	cb.v1[ 1 ] = rect[ 3 ];	//y		
-	cb.v1[ 2 ] = 0.5f;	//z		*
-	cb.v1[ 3 ] = 1.f;
-	cb.t1[ 0 ] = region[ 0u ];	//u
-	cb.t1[ 1 ] = region[ 1u ];	//v
+	cb.v1.x_ = rect.x_;	//x		
+	cb.v1.y_ = rect.w_;	//y		
+	cb.v1.z_ = 0.5f;	//z		*
+	cb.v1.w_ = 1.f;
+	cb.t1.x_ = region.x_;	//u
+	cb.t1.y_ = region.y_;	//v
 
-	cb.v2[ 0 ] = rect[ 0 ];	//x		*
-	cb.v2[ 1 ] = rect[ 1 ];	//y		|
-	cb.v2[ 2 ] = 0.5f;	//z			*
-	cb.v2[ 3 ] = 1.f;
-	cb.t2[ 0 ] = region[ 2u ];	//u
-	cb.t2[ 1 ] = region[ 3u ];	//v
+	cb.v2.x_ = rect.x_;	//x		*
+	cb.v2.y_ = rect.y_;	//y		|
+	cb.v2.z_ = 0.5f;	//z			*
+	cb.v2.w_ = 1.f;
+	cb.t2.x_ = region.z_;	//u
+	cb.t2.y_ = region.w_;	//v
 
-	cb.v3[ 0 ] = rect[ 2 ];	//x		*-----*
-	cb.v3[ 1 ] = rect[ 1 ];	//y		|	/
-	cb.v3[ 2 ] = 0.5f;	//z			*/
-	cb.v3[ 3 ] = 1.f;
-	cb.t3[ 0 ] = region[ 4u ];	//u
-	cb.t3[ 1 ] = region[ 5u ];	//v
+	cb.v3.x_ = rect.z_;	//x		*-----*
+	cb.v3.y_ = rect.y_;	//y		|	/
+	cb.v3.z_ = 0.5f;	//z			*/
+	cb.v3.w_ = 1.f;
+	cb.t3.x_ = region[ 4u ];	//u
+	cb.t3.y_ = region[ 5u ];	//v
 
-	cb.v4[ 0 ] = rect[ 2 ];	//x		*-----*
-	cb.v4[ 1 ] = rect[ 3 ];	//y		|	/
-	cb.v4[ 2 ] = 0.5f;		//z		*/    *
-	cb.v4[ 3 ] = 1.f;
-	cb.t4[ 0 ] = region[ 6u ];	//u
-	cb.t4[ 1 ] = region[ 7u ];	//v
+	cb.v4.x_ = rect.z_;	//x		*-----*
+	cb.v4.y_ = rect.w_;	//y		|	/
+	cb.v4.z_ = 0.5f;		//z		*/    *
+	cb.v4.w_ = 1.f;
+	cb.t4.x_ = region[ 6u ];	//u
+	cb.t4.y_ = region[ 7u ];	//v
 
 	m_d3d11DevCon->IASetInputLayout( 0 );
 	m_d3d11DevCon->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
