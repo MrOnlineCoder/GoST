@@ -15,7 +15,7 @@ gtMainSystemCommon::gtMainSystemCommon( void ) : m_isRun( true ),
 	s_loger = gtPtrNew<gtLogerImpl>( new gtLogerImpl );
 	s_instance = this;
 
-	m_pluginSystem = gtPtrNew<gtPluginSystemImpl>( new gtPluginSystemImpl );
+	m_pluginSystem	= gtPtrNew<gtPluginSystemImpl>( new gtPluginSystemImpl );
 }
 
 gtMainSystemCommon::~gtMainSystemCommon(){
@@ -34,6 +34,10 @@ void gtMainSystemCommon::initStackTracer( void ){
 	if( !m_stackTracer ){
 		m_stackTracer = new gtStackTrace( this );
 	}
+}
+
+void gtMainSystemCommon::initEventSystem( void ){
+	m_events		= gtPtrNew<gtEventSystem>( new gtEventSystem( &m_engineConsumer, m_params.m_consumer ) );
 }
 
 	//	возвратит указатель на gtMainSystem
@@ -104,6 +108,12 @@ void		gtMainSystemCommon::removeImage( gtImage* image ){
 		image = nullptr;
 	}
 }
+
+	//	добавить событие. inFront если вперёд.
+void		gtMainSystemCommon::addEvent( const gtEvent& ev, u8 prior ){
+	m_events->addEvent( ev, prior );
+}
+
 
 /*
 Copyright (c) 2017 532235
