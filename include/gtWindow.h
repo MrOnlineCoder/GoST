@@ -59,6 +59,9 @@ namespace gost{
 
 		virtual void*	getHandle( void ) = 0;
 
+			//	Получить координаты левого верхнего и правого нижнего углов
+		virtual const v4i&		getRect( void ) = 0;
+
 	};
 
 }

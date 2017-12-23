@@ -1,45 +1,55 @@
-﻿//	GOST
+//	GOST
 
-#pragma once
-#ifndef __GT_TEXTURE_H__
-#define __GT_TEXTURE_H__
+#include"stdafx.h"
 
-/*
-	Hardware текстура
-*/
+gtEventSystem::gtEventSystem( gtEventConsumer* ec, gtEventConsumer* uc ):
+	m_engineConsumer( ec ),
+	m_userConsumer( uc ),
+	m_numOfEvents( 0u ),
+	m_currentEvent( 0u )
+{}
 
-namespace gost{
-
-		//	тип текстуры
-	enum gtTextureType : u32 {
-
-		//	обычная
-		TEXTURE_TYPE_2D,
-
-		//	cubemap
-		TEXTURE_TYPE_CUBE
-	};
-
-		//	текстура
-	class gtTexture : public gtRefObject {
-	public:
-
-			//	возвратит тип текстуры
-		virtual gtTextureType	getType( void ) = 0;
-
-			//	получить ширину
-		virtual u32				getWidth( void ) = 0;
-
-			//	получить высоту
-		virtual u32				getHeight( void ) = 0;
-
-	};
-
-
+gtEventSystem::~gtEventSystem( void ){
 }
 
+void gtEventSystem::runEventLoop( void ){
+	while( true ){
 
-#endif
+		if( m_events[ m_currentEvent ].type == gtEvent::ET_NONE )
+			break;
+
+		if( m_userConsumer )
+			m_userConsumer->processEvent( m_events[ m_currentEvent ] );
+
+		m_events[ m_currentEvent ].type = gtEvent::ET_NONE;
+
+
+		m_currentEvent++;
+		if( m_currentEvent == m_numOfEvents )
+			m_currentEvent = 0u;
+	}
+
+	m_numOfEvents = 0u;
+}
+
+void gtEventSystem::addEvent( const gtEvent& ev, u8 prior ){
+	if( m_numOfEvents < EventMax ){
+		m_events[ m_numOfEvents ] = ev;
+		m_numOfEvents++;
+	}
+}
+
+//	=============================================================
+
+gtEngineEventConsumer::gtEngineEventConsumer(){
+}
+
+gtEngineEventConsumer::~gtEngineEventConsumer(){
+}
+
+void gtEngineEventConsumer::processEvent( const gtEvent& ev ){
+
+}
 
 /*
 Copyright (c) 2017 532235

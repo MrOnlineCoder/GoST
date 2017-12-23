@@ -17,6 +17,7 @@ namespace gost{
 	class gtDriver;
 	struct gtDriverInfo;
 	struct gtImage;
+	class gtTimer;
 	
 		//	Перечисление ОС
 	enum class gtDeviceType{
@@ -33,13 +34,17 @@ namespace gost{
 
 		//	В этой структуре будут находится параметры для запуска главной системы
 	struct gtDeviceCreationParameters{
-		gtDeviceCreationParameters( void ){
+		gtDeviceCreationParameters( void ):
+			m_outputWindow( nullptr ),
+			m_consumer( nullptr )
+		{
 #if defined(GT_PLATFORM_WIN32)
 			m_device_type	=	gtDeviceType::windows;
 #else
 #error "Эта ОС не поддерживается"
 #endif
 			m_outputWindow = nullptr;
+
 		}
 		~gtDeviceCreationParameters( void ){}
 
@@ -48,6 +53,9 @@ namespace gost{
 
 			//	если nullptr то будет создано стандартное окно вывода
 		gtOutputWindow*		m_outputWindow;
+
+
+		gtEventConsumer*	m_consumer;
 
 	};
 
@@ -92,9 +100,20 @@ namespace gost{
 			//	Удаляет картинку из памяти
 		virtual void		removeImage( gtImage* ) = 0;
 
+			//	получит время прошедшее с момента запуска движка
+		virtual u32			getTime( void ) = 0;
+
+			//	получит указатель на таймер
+		virtual gtTimer*	getTimer( void ) = 0;
+
+			//	добавить событие. prior - приоритет - 0 обычный, 1 самый важный
+		virtual void		addEvent( const gtEvent&, u8 prior = 0u ) = 0;
+
 			//	возвратит указатель на gtMainSystem
 			//	альтернатива this так как this не работает в статических методах
 		GT_API static gtMainSystem*	getInstance( void );
+
+
 	};
 
 }

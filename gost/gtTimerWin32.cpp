@@ -1,45 +1,28 @@
-﻿//	GOST
+//	GOST
 
-#pragma once
-#ifndef __GT_TEXTURE_H__
-#define __GT_TEXTURE_H__
+#include "stdafx.h"
 
-/*
-	Hardware текстура
-*/
-
-namespace gost{
-
-		//	тип текстуры
-	enum gtTextureType : u32 {
-
-		//	обычная
-		TEXTURE_TYPE_2D,
-
-		//	cubemap
-		TEXTURE_TYPE_CUBE
-	};
-
-		//	текстура
-	class gtTexture : public gtRefObject {
-	public:
-
-			//	возвратит тип текстуры
-		virtual gtTextureType	getType( void ) = 0;
-
-			//	получить ширину
-		virtual u32				getWidth( void ) = 0;
-
-			//	получить высоту
-		virtual u32				getHeight( void ) = 0;
-
-	};
-
-
+gtTimerWin32::gtTimerWin32( void ){
 }
 
+gtTimerWin32::~gtTimerWin32( void ){
+}
 
-#endif
+gtRealTime	gtTimerWin32::getRealTime( void ){
+	SYSTEMTIME st;
+	GetLocalTime( &st );
+	
+	gtRealTime t;
+	t.m_year	=	st.wYear;
+	t.m_month	=	st.wMonth;
+	t.m_dayWheek=	st.wDayOfWeek;
+	t.m_day		=	st.wDay;
+	t.m_hour	=	st.wHour;
+	t.m_minute	=	st.wMinute;
+	t.m_second	=	st.wSecond;
+
+	return t;
+}
 
 /*
 Copyright (c) 2017 532235

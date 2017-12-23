@@ -1,40 +1,48 @@
-﻿//	GOST
+//	GOST
 
 #pragma once
-#ifndef __GT_TEXTURE_H__
-#define __GT_TEXTURE_H__
+#ifndef __GT_EVENT_SYSTEM_H__
+#define __GT_EVENT_SYSTEM_H__
 
 /*
-	Hardware текстура
 */
 
 namespace gost{
 
-		//	тип текстуры
-	enum gtTextureType : u32 {
+	constexpr u32 EventMax = 64u;
 
-		//	обычная
-		TEXTURE_TYPE_2D,
+	class gtEventSystem : public gtRefObject{
 
-		//	cubemap
-		TEXTURE_TYPE_CUBE
-	};
 
-		//	текстура
-	class gtTexture : public gtRefObject {
+		gtEventConsumer * m_engineConsumer;
+		gtEventConsumer * m_userConsumer;
+
+		gtEvent m_events[ EventMax ];
+		u32 m_numOfEvents;
+		u32 m_currentEvent;
+
+
 	public:
 
-			//	возвратит тип текстуры
-		virtual gtTextureType	getType( void ) = 0;
+		gtEventSystem( gtEventConsumer* ec, gtEventConsumer* uc = nullptr );
+		virtual ~gtEventSystem( void );
 
-			//	получить ширину
-		virtual u32				getWidth( void ) = 0;
+		void runEventLoop( void );
 
-			//	получить высоту
-		virtual u32				getHeight( void ) = 0;
-
+		void addEvent( const gtEvent&, u8 prior );
 	};
 
+	//	=============================================================
+
+	class gtEngineEventConsumer : public gtEventConsumer{
+	public:
+
+		gtEngineEventConsumer();
+		~gtEngineEventConsumer();
+		
+		void processEvent( const gtEvent& ev );
+
+	};
 
 }
 

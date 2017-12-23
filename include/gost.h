@@ -20,6 +20,8 @@
 #include <gtInfo.h>
 #include <gtTypes.h>
 
+#include <gtEvent.h>
+
 #include <gtString.h>
 
 #include <gtUtilities.h>
@@ -27,6 +29,7 @@
 #include <gtError.h>
 
 #include <gtList.h>
+#include <gtPriorQueue.h>
 
 #include <gtVector.h>
 #include <gtColor.h>
@@ -44,6 +47,7 @@
 #include <gtShader.h>
 #include <gtMaterial.h>
 
+#include <gtTimer.h>
 
 #include <gtDriver.h>
 

@@ -10,6 +10,15 @@
 
 namespace gost{
 		
+#define x_ at(0u)
+#define y_ at(1u)
+#define z_ at(2u)
+#define w_ at(3u)
+#define a_ at(4u)
+#define b_ at(5u)
+#define c_ at(6u)
+#define d_ at(7u)
+
 	template<typename T, u32 i >
 	class gtVector{
 	
@@ -72,6 +81,17 @@ namespace gost{
 			return m_data[ id ];
 		}
 
+			//	даёт доступ к компоненту вектора
+		T&	at( u32 id ){
+			GT_ASSERT( id < i, "Bad component id", "id < i", id, i );
+			return m_data[ id ];
+		}
+
+			//	даёт доступ к компоненту вектора. только чтение
+		const T&	at( u32 id ) const {
+			GT_ASSERT( id < i, "Bad component id", "id < i", id, i );
+			return m_data[ id ];
+		}
 			//	получить значение компонента
 		const T	getComponent( u32 id ) const {
 			GT_ASSERT( id < i, "Bad component id", "id < i", id, i );

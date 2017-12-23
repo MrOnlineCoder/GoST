@@ -13,6 +13,7 @@ namespace gost{
 	
 		///	Общий класс для конкретных реализаций gtMainSystem
 	class gtLogerImpl;
+
 	class gtMainSystemCommon : public gtMainSystem{
 	protected:
 
@@ -35,6 +36,10 @@ namespace gost{
 
 		gtPtr<gtPluginSystemImpl> m_pluginSystem;
 
+		gtPtr<gtEventSystem> m_events;
+
+		gtEngineEventConsumer m_engineConsumer;
+
 	public:
 
 			///	конструктор
@@ -54,6 +59,8 @@ namespace gost{
 			///	то, после создания окна, вызывается эта функция, чтобы можно было дать трейсеру
 			///	инициализированный объект окна
 		void initStackTracer( void );
+
+		void initEventSystem( void );
 
 			///	возвратит указатель на gtMainSystem
 			///	альтернатива this так как this не работает в статических методах
@@ -83,6 +90,9 @@ namespace gost{
 
 			//	Удаляет картинку из памяти
 		void		removeImage( gtImage* );
+
+			//	добавить событие. inFront если вперёд.
+		void		addEvent( const gtEvent&, u8 prior = 0u );
 
 	};
 

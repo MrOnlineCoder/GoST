@@ -1,43 +1,49 @@
 ﻿//	GOST
 
 #pragma once
-#ifndef __GT_TEXTURE_H__
-#define __GT_TEXTURE_H__
+#ifndef __GT_TIMER_H__
+#define __GT_TIMER_H__
 
 /*
-	Hardware текстура
+	Работа с временем
 */
 
 namespace gost{
+	
 
-		//	тип текстуры
-	enum gtTextureType : u32 {
+	struct gtRealTime{
+		
+			//	год
+		s32 m_year;
 
-		//	обычная
-		TEXTURE_TYPE_2D,
+			//	месяц 1 - 12
+		u32 m_month;
 
-		//	cubemap
-		TEXTURE_TYPE_CUBE
+			//	день 1 - 31
+		u32 m_day;
+
+			//	день недели 0 - 6, sunday, monday…
+		u32 m_dayWheek;
+
+			//	час	0 - 23
+		u32 m_hour;
+
+			//	минута 0 - 59
+		u32 m_minute;
+
+			//	секунда 0 - 59
+		u32 m_second;
 	};
 
-		//	текстура
-	class gtTexture : public gtRefObject {
+	class gtTimer : public gtRefObject{
 	public:
 
-			//	возвратит тип текстуры
-		virtual gtTextureType	getType( void ) = 0;
-
-			//	получить ширину
-		virtual u32				getWidth( void ) = 0;
-
-			//	получить высоту
-		virtual u32				getHeight( void ) = 0;
-
+		virtual gtRealTime	getRealTime( void ) = 0;
+		
 	};
 
 
 }
-
 
 #endif
 

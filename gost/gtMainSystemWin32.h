@@ -15,6 +15,8 @@ namespace gost{
 
 		gtPtr<gtOutputWindow>	m_output_window;
 
+		gtPtr<gtTimerWin32> m_timer;
+
 			///	получает и обрабатывает оконные сообщения
 		void updateWindowEvents( void );
 
@@ -39,6 +41,11 @@ namespace gost{
 		bool	update( void ) GT_FINAL;
 
 		gtWindow*	createSystemWindow( const gtWindowInfo& );
+
+			//	получит время прошедшее с момента запуска движка
+		u32			getTime( void );
+			//	получит указатель на таймер
+		gtTimer*	getTimer( void );
 	};
 
 }

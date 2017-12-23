@@ -23,6 +23,9 @@ namespace gost{
 			D3D11_FILTER filter, 
 			D3D11_TEXTURE_ADDRESS_MODE addressMode,
 			u32 anisotropic_level = 1 );
+
+			//	размер текстуры
+		v2u		m_size;
 	public:
 
 		gtTextureD3D11( gtDriverD3D11* );
@@ -36,6 +39,10 @@ namespace gost{
 		//	===========================================
 			//	возвратит тип текстуры
 		gtTextureType	getType( void );
+			//	получить ширину
+		u32				getWidth( void );
+			//	получить высоту
+		u32				getHeight( void );
 
 	};
 

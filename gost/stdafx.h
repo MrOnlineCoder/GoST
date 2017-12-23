@@ -20,7 +20,7 @@
 #include <windows.h>
 #include <shlobj.h>
 #include <shlwapi.h>
-
+#pragma comment(lib,"winmm.lib")
 
 #define GT_EXPORTS
 
@@ -41,10 +41,15 @@ using namespace gost;
 #include "gtPluginRender.h"
 #include "gtPluginImportImage.h"
 
+#include "gtTimerWin32.h"
+
+#include "gtEventSystem.h"
+
 #include "gtMainSystemCommon.h"
 #include "gtMainSystemWin32.h"
 
 #include "gtLogerImpl.h"
+
 
 #include "gtWindowCommon.h"
 #include "gtWindowWin32.h"
