@@ -43,6 +43,8 @@ using namespace gost;
 
 #include "gtTimerWin32.h"
 
+#include "gtEventSystem.h"
+
 #include "gtMainSystemCommon.h"
 #include "gtMainSystemWin32.h"
 
