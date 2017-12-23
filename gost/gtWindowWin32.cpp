@@ -55,7 +55,7 @@ bool	gtWindowWin32::init( u32 i ){
 		gtLogWriter::printError( u"Can not register window class. Error code[%u]", (u32)GetLastError() );
 		return false;
 	}
-
+	
 	m_hWnd = CreateWindow( (wchar_t*)m_className.data(),
 		(wchar_t*)m_params.m_title.data(),
 		style,
@@ -72,12 +72,13 @@ bool	gtWindowWin32::init( u32 i ){
 		gtLogWriter::printError( u"Can not create window. Error code[%u]", (u32)GetLastError() );
 		return false;
 	}
-
+	 
 	ShowWindow( m_hWnd, SW_SHOWNORMAL  );
 	SetForegroundWindow( m_hWnd );
 	SetFocus( m_hWnd );
 	UpdateWindow( m_hWnd );
-
+	
+	
 	m_isInit = true;
 	return true;
 }
@@ -104,10 +105,16 @@ void*	gtWindowWin32::getHandle( void ){
 }
 
 LRESULT CALLBACK gtWindowWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
-	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
 	gtWindowWin32* pD = nullptr;
+
+	s32 wmId    = LOWORD(wParam);
+	s32 wmEvent = HIWORD(wParam);
+
+
+	gtEvent ev;
+	ev.type = gtEvent::ET_SYSTEM;
 
 	if( !pD ){
 		if (message == WM_NCCREATE)   {
@@ -122,11 +129,8 @@ LRESULT CALLBACK gtWindowWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, 
 		}
 	}
 
-	switch (message)
-	{
+	switch( message ){
 	case WM_COMMAND:
-		wmId    = LOWORD(wParam);
-		wmEvent = HIWORD(wParam);
 		// Parse the menu selections:
 		switch (wmId)
 		{
@@ -139,16 +143,34 @@ LRESULT CALLBACK gtWindowWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, 
 		PostQuitMessage( 0 );
 		break;
 
-	case WM_MOVE:{
-		
-	}break;
+	case WM_MOVE:
+		ev.value1 = GT_EVENT_WINDOW_MOVE;
+	break;
 	case WM_PAINT:
-		
+		ev.value1 = GT_EVENT_WINDOW_PAINT;
+		break;
+	case WM_SIZE:{
+		switch( wmId ){
+		case SIZE_MAXIMIZED:
+			ev.value1 = GT_EVENT_WINDOW_MAXIMIZE;
+			break;
+		case SIZE_MINIMIZED:
+			ev.value1 = GT_EVENT_WINDOW_MINIMIZE;
+			break;
+		case SIZE_RESTORED:
+			ev.value1 = GT_EVENT_WINDOW_RESTORE;
+			break;
+		}
+	}break;
+	case WM_SIZING:
+			ev.value1 = GT_EVENT_WINDOW_SIZING;
 		break;
 	case WM_DESTROY:
 		PostQuitMessage( 0 );
 		break;
 	}
+
+	gtMainSystem::getInstance()->addEvent( ev );
 
 	return DefWindowProc( hWnd, message, wParam, lParam );
 }
