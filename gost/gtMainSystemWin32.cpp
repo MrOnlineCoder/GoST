@@ -45,6 +45,7 @@ namespace gost{
 			m_output_window->release();
 
 			this->initStackTracer();
+			this->initEventSystem();
 
 			this->s_fileSystem = new gtFileSystemWin32;
 
@@ -78,6 +79,9 @@ namespace gost{
 
 	bool	gtMainSystemWin32::update( void ){
 		this->updateWindowEvents();
+		
+		this->m_events->runEventLoop();
+
 		return m_isRun;
 	}
 
