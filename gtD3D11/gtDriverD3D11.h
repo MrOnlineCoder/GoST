@@ -64,8 +64,10 @@ namespace gost{
 		ID3D11DepthStencilView* m_depthStencilView;
 		ID3D11RasterizerState*	m_RasterizerSolid;
 		ID3D11RasterizerState*	m_RasterizerSolidNoBackFaceCulling;
-		ID3D11RasterizerState*	m_RasterizerWireframe;
 		ID3D11RasterizerState*	m_RasterizerWireframeNoBackFaceCulling;
+		ID3D11RasterizerState*	m_RasterizerWireframe;
+		ID3D11BlendState*		m_blendStateAlphaEnabled;
+		ID3D11BlendState*		m_blendStateAlphaDisabled;
 
 		void clearRenderTarget( const gtColor& );
 
@@ -78,6 +80,8 @@ namespace gost{
 
 			//	непосредственно рисует картинку
 		void	_draw2DImage( const v4f& rect, const v8f& region, const gtMaterial& );
+
+		void	enableBlending( bool );
 
 	public:
 		gtDriverD3D11( gtMainSystem* System, gtDriverInfo params );

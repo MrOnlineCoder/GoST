@@ -231,7 +231,8 @@ gtShaderModel	gtShaderImpl::getShaderModel( void ){
 }
 
 bool gtShaderImpl::createShaderObject( u32 byteSize ){
-	D3D11_BUFFER_DESC mbd { 0 };
+	D3D11_BUFFER_DESC mbd;
+	memset( &mbd, 0, sizeof( mbd ) );
 	mbd.Usage	=	D3D11_USAGE_DYNAMIC;
 	mbd.ByteWidth	=	byteSize;
 	mbd.BindFlags	=	D3D11_BIND_CONSTANT_BUFFER;

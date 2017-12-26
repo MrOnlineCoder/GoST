@@ -16,8 +16,10 @@ gtDriverD3D11::gtDriverD3D11( gtMainSystem* System, gtDriverInfo params ):
 	m_depthStencilView( nullptr ),
 	m_RasterizerSolid( nullptr ),
 	m_RasterizerSolidNoBackFaceCulling( nullptr ),
-	m_RasterizerWireframe( nullptr ),
 	m_RasterizerWireframeNoBackFaceCulling( nullptr ),
+	m_RasterizerWireframe( nullptr ),
+	m_blendStateAlphaEnabled( nullptr ),
+	m_blendStateAlphaDisabled( nullptr ),
 	m_shader2DStandart( nullptr )
 {
 	m_params =  params;
@@ -37,6 +39,12 @@ gtDriverD3D11::~gtDriverD3D11( void ){
 	
 	if( m_shader2DStandart )
 		m_shader2DStandart->release();
+
+	if( m_blendStateAlphaDisabled )
+		m_blendStateAlphaDisabled->Release();
+
+	if( m_blendStateAlphaEnabled )
+		m_blendStateAlphaEnabled->Release();
 
 	if( m_RasterizerWireframeNoBackFaceCulling )
 		m_RasterizerWireframeNoBackFaceCulling->Release();
@@ -310,6 +318,35 @@ bool gtDriverD3D11::initialize( void ){
 
 	m_d3d11DevCon->RSSetState( m_RasterizerSolid );
 
+
+	D3D11_BLEND_DESC  bd;
+	memset( &bd, 0, sizeof(bd) );
+	bd.RenderTarget[0].BlendEnable = TRUE;
+	bd.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	bd.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	bd.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	bd.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	bd.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	bd.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	bd.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	if( FAILED( m_d3d11Device->CreateBlendState( &bd, &m_blendStateAlphaEnabled ) ) ){
+		gtLogWriter::printError( u"Can't create Direct3D 11 blend state" );
+		return false;
+	}
+
+	bd.RenderTarget[0].BlendEnable = FALSE;
+	
+	if( FAILED( m_d3d11Device->CreateBlendState( &bd, &m_blendStateAlphaDisabled ) ) ){
+		gtLogWriter::printError( u"Can't create Direct3D 11 blend state" );
+		return false;
+	}
+
+	enableBlending( true );
+
+
 	D3D11_VIEWPORT viewport;
 	viewport.Width		=	(f32)m_params.m_backBufferSize[0u];
 	viewport.Height		=	(f32)m_params.m_backBufferSize[1u];
@@ -342,9 +379,23 @@ bool gtDriverD3D11::initialize( void ){
 
 		//	создание константного буффера.
 		if( !m_shader2DStandart->createShaderObject( 96u ) ) return false;
+		if( !m_shader2DStandart->createShaderObject( 16u ) ) return false;
 	}
 
 	return true;
+}
+
+void	gtDriverD3D11::enableBlending( bool b ){
+	float blendFactor[4];
+	blendFactor[0] = 0.0f;
+	blendFactor[1] = 0.0f;
+	blendFactor[2] = 0.0f;
+	blendFactor[3] = 0.0f;
+	if( b ){
+		m_d3d11DevCon->OMSetBlendState( m_blendStateAlphaEnabled, blendFactor, 0xffffffff );
+	}else{
+		m_d3d11DevCon->OMSetBlendState( m_blendStateAlphaDisabled, blendFactor, 0xffffffff );
+	}
 }
 
 void gtDriverD3D11::clearRenderTarget( const gtColor& color ){
@@ -413,8 +464,11 @@ void gtDriverD3D11::draw2DImage( const v4i& rect, const v4i& region, const gtMat
 	}else{
 		GT_ASSERT2( m.textureLayer[ 0u ].texture, "texture != nullptr" );
 
-		u32 width = m.textureLayer[ 0u ].texture->getWidth();
-		u32 height = m.textureLayer[ 0u ].texture->getHeight();
+		u32 width = 1u, height = 1u;
+		if( m.textureLayer[ 0u ].texture ){
+			width = m.textureLayer[ 0u ].texture->getWidth();
+			height = m.textureLayer[ 0u ].texture->getHeight();
+		}
 
 		f32 mulX = 1.f / (f32)width;
 		f32 mulY = 1.f / (f32)height;
@@ -495,16 +549,37 @@ void gtDriverD3D11::_draw2DImage( const v4f& rect, const v8f& region, const gtMa
 	m_d3d11DevCon->IASetInputLayout( 0 );
 	m_d3d11DevCon->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	m_d3d11DevCon->Map(
-		((gtShaderImpl*)shader)->m_constantBuffers[ 0 ],
-		0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
+	u32 sz = ((gtShaderImpl*)shader)->m_constantBuffers.size();
 
-	D3D11_BUFFER_DESC d;
-	((gtShaderImpl*)shader)->m_constantBuffers[ 0 ]->GetDesc( &d );
+	struct cbPixel{
+		float opacity;
+		float padding[3];
+	}cb_pixel;
 
-	memcpy( mappedResource.pData, &cb, d.ByteWidth );
-	m_d3d11DevCon->Unmap( ((gtShaderImpl*)shader)->m_constantBuffers[ 0 ], 0 );
+	cb_pixel.opacity = 1.f - material.opacity;
+
+	void * cbs[2] = 
+	{
+		&cb,
+		&cb_pixel
+	};
+
+	for( u32 i = 0u; i < sz; ++i ){
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		
+		m_d3d11DevCon->Map(
+			((gtShaderImpl*)shader)->m_constantBuffers[ i ],
+			0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
+
+		D3D11_BUFFER_DESC d;
+		((gtShaderImpl*)shader)->m_constantBuffers[ i ]->GetDesc( &d );
+
+		memcpy( mappedResource.pData, cbs[ i ], d.ByteWidth );
+		m_d3d11DevCon->Unmap( ((gtShaderImpl*)shader)->m_constantBuffers[ i ], 0 );
+
+	}
+	m_d3d11DevCon->VSSetConstantBuffers( 0, 1, &((gtShaderImpl*)shader)->m_constantBuffers[ 0u ] );
+	m_d3d11DevCon->PSSetConstantBuffers( 0, 1, &((gtShaderImpl*)shader)->m_constantBuffers[ 1u ] );
 
 	for( u32 i = 0u; i < 16u; ++i ){
 		if( !material.textureLayer[ i ].texture ) break;
@@ -515,7 +590,13 @@ void gtDriverD3D11::_draw2DImage( const v4f& rect, const v8f& region, const gtMa
 		m_d3d11DevCon->PSSetSamplers( i, 1, texture->getSamplerState() );
 	}
 
-	m_d3d11DevCon->VSSetConstantBuffers( 0, 1, &((gtShaderImpl*)shader)->m_constantBuffers[ 0 ] );
+	/* так делать плохо, но пусть пока будет так */
+	if( material.flags & gtMaterialFlag::MF_BLEND )
+		enableBlending( true );
+	else
+		enableBlending( false );
+
+	
 	m_d3d11DevCon->Draw( 6, 0 );
 }
 
