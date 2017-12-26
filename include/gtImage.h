@@ -21,12 +21,13 @@ namespace gost{
 			mipCount( 1u ),
 			data( nullptr ),
 			dataSize( 0u ),
-			pitch( 0u )
+			pitch( 0u ),
+			frames( 1u )
 		{}
 
 		virtual ~gtImage( void ){
 			if( data ){
-				delete []data;
+				gtMainSystem::getInstance()->freeMemory( (void**)&data );
 				data = nullptr;
 			}
 		}
@@ -71,6 +72,9 @@ namespace gost{
 		u32		dataSize;
 
 		u32		pitch;
+
+			//	кадры
+		u32		frames;
 
 			//	конвертирует не сжатый формат в указанный
 		void	convert( Format newFormat ){
@@ -216,7 +220,7 @@ namespace gost{
 			u8 * p_Up = &data[ 0u ];
 			u8 * p_Down = &data[ pitch * height - pitch ];
 
-			for( u32 i = 0u, offset = 0u; i < height / 2u; ++i ){
+			for( u32 i = 0u; i < height / 2u; ++i ){
 
 				memcpy( line, p_Up, pitch );
 				

@@ -22,6 +22,13 @@ namespace gost{
             ((u32)(u8)(ch0)|((u32)(u8)(ch1)<<8)|\
             ((u32)(u8)(ch2)<<16)|((u32)(u8)(ch3)<<24))
 
+#ifndef LOWORD
+	#define LOWORD(x)((u16)(((u32)(x))&0xffff))
+#endif
+#ifndef HIWORD
+	#define HIWORD(x)((u16)((((u32)(x))>>16)&0xffff))
+#endif
+
 	//	Компилятор
 	#if defined(__clang__)
 	#	define GT_COMPILER_CLANG

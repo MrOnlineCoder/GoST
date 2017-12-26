@@ -113,36 +113,92 @@ void ScanDirs( gtString dir, bool subDir ){
 }
 
 class eventConsumer : public gtEventConsumer{
+	//	хранит состояния нажатых клавиш
+	bool m_keysDown[ 256u ];
+
+	//	отжатых клавиш. возможно всё можно уместить в один массив. я не задумывался. так нагляднее
+	bool m_keysUp[ 256u ];
 public:
+
+	eventConsumer( void ):
+		mouse_x( 0 ),
+		mouse_y( 0 ),
+		lmb( false ),
+		rmb( false ),
+		mmb( false ),
+		ext1( false ),
+		ext2( false ),
+		wheel_delta( 0 ){
+		memset( m_keysDown, 0, 256u );
+		memset( m_keysUp, 0, 256u );
+	}
 
 	void processEvent( const gtEvent& ev ){
 
+		rmb = lmb = mmb = ext1 = ext2 = false;
+
 		switch( ev.type ){
 			case gtEvent::ET_SYSTEM:{
-				switch( ev.value1 ){
-				case GT_EVENT_WINDOW_MAXIMIZE:
-					gtLogWriter::printInfo( u"Window maximized" );
-					break;
-				case GT_EVENT_WINDOW_MINIMIZE:
-					gtLogWriter::printInfo( u"Window minimized" );
-					break;
-				case GT_EVENT_WINDOW_MOVE:
-					gtLogWriter::printInfo( u"Window moved" );
-					break;
-				case GT_EVENT_WINDOW_PAINT:
-					gtLogWriter::printInfo( u"Window painted" );
-					break;
-				case GT_EVENT_WINDOW_RESTORE:
-					gtLogWriter::printInfo( u"Window restored" );
-					break;
-				case GT_EVENT_WINDOW_SIZING:
-					gtLogWriter::printInfo( u"Change size" );
-					break;
+			}break;
+			case gtEvent::ET_KEY:{
+				m_keysDown[ ev.value1 & GT_EVENT_MASK_KEYS ] = (ev.value1 & GT_EVENT_MASK_KEY_PRESS) ? true : false;
+				m_keysUp[ ev.value1 & GT_EVENT_MASK_KEYS ] = (ev.value1 & GT_EVENT_MASK_KEY_PRESS) ? false : true;
+
+				if( ev.value2 ){
+					char16_t s[2]{ ev.value2 , 0 };
+					gtLogWriter::printInfo( u"%s", s );
 				}
+
+			}break;
+			case gtEvent::ET_MOUSE:{
+				mouse_x = LOWORD(ev.value1);
+				mouse_y = HIWORD(ev.value1);
+				wheel_delta = (s32)ev.dataSize;
+
+				if(ev.value2 & GT_EVENT_MASK_MOUSE_LMB) lmb = true;
+				if(ev.value2 & GT_EVENT_MASK_MOUSE_RMB) rmb = true;
+				if(ev.value2 & GT_EVENT_MASK_MOUSE_MMB) mmb = true;
+				if(ev.value2 & GT_EVENT_MASK_MOUSE_EXTRA1) ext1 = true;
+				if(ev.value2 & GT_EVENT_MASK_MOUSE_EXTRA2) ext1 = true;
+
+				if( ev.value2 & GT_EVENT_MASK_MOUSE_LMB_DBL ){
+					gtLogWriter::printInfo( u"LMB DBL" );
+				}
+
+				if( ev.value2 & GT_EVENT_MASK_MOUSE_RMB_DBL ){
+					gtLogWriter::printInfo( u"RMB DBL" );
+				}
+
+				if( wheel_delta > 0 ){
+					gtLogWriter::printInfo( u"Wheel up [%i]", wheel_delta );
+				}
+
+				if( wheel_delta < 0 ){
+					gtLogWriter::printInfo( u"Wheel down [%i]", wheel_delta );
+				}
+
 			}break;
 		}
-		
 	}
+
+	bool isKeyDown( gtKey key ){
+		return m_keysDown[ (u32)key ];
+	}
+
+		/* отжатую клавишу нужно обработать только 1 раз. по этому если true то сброс */
+		/* примерно так же можно сделать определение НАЖАТИЯ ТОЛЬКО 1 РАЗ. без зажима */
+		/* это только пример как можно сделать */
+	bool isKeyUp( gtKey key ){
+		bool r = m_keysUp[ (u32)key ];
+		if( r ) m_keysUp[ (u32)key ] = false; // сброс
+		return r;
+	}
+
+	s32 mouse_x, mouse_y;
+	s32 wheel_delta;
+	bool lmb, rmb, mmb, ext1, ext2;
+
+
 };
 
 #if defined( GT_PLATFORM_WIN32 )
@@ -184,61 +240,93 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 
 
-	gtImage * image = my_system->loadImage( gtFileSystem::getProgramPath() + u"bmp24bit.bmp" );
+	gtImage * image1 = my_system->loadImage( gtFileSystem::getProgramPath() + u"png8.png" );
+	gtImage * image2 = my_system->loadImage( gtFileSystem::getProgramPath() + u"png24.png" );
+	gtImage * image3 = my_system->loadImage( gtFileSystem::getProgramPath() + u"png32.png" );
+	gtImage * image4 = my_system->loadImage( gtFileSystem::getProgramPath() + u"png48.png" );
 	
-	// если без gtPtr, то в конце нужно вызвать texture->release();
-	gtPtr<gtTexture> texture = gtPtrNew<gtTexture>( driver1->createTexture( image ) );
+	gtPtr<gtTexture> texture1 = gtPtrNew<gtTexture>( driver1->createTexture( image1 ) );
+	gtPtr<gtTexture> texture2 = gtPtrNew<gtTexture>( driver1->createTexture( image2 ) );
+	gtPtr<gtTexture> texture3 = gtPtrNew<gtTexture>( driver1->createTexture( image3 ) );
+	gtPtr<gtTexture> texture4 = gtPtrNew<gtTexture>( driver1->createTexture( image4 ) );
 
 	/* software картинка больше не нужна */
-	my_system->removeImage( image );
+	my_system->removeImage( image1 );
+	my_system->removeImage( image2 );
+	my_system->removeImage( image3 );
+	my_system->removeImage( image4 );
 	
-	gtMaterial material;
-	material.textureLayer[ 0u ].texture = texture.data();
+	gtMaterial material1;
+	material1.flags = gtMaterialFlag::MF_BLEND;
+	material1.opacity = 1.f;
+	material1.textureLayer[ 0u ].texture = texture1.data();
 
-	f32 posx = 300.f;
-	f32 posy = 250.f;
+	gtMaterial material2;
+	//material2.flags = gtMaterialFlag::MF_BLEND;
+	material2.opacity = 0.5f;
+	material2.textureLayer[ 0u ].texture = texture2.data();
 
-	u32 then = my_system->getTime();
+	gtMaterial material3;
+	material3.flags = gtMaterialFlag::MF_BLEND;
+	material3.opacity = 0.5f;
+	material3.textureLayer[ 0u ].texture = texture3.data();
 
-	u32 time = 0u;
-	f32 deltaTime = 0.f;
-	f32 angle = 0.f;
+	gtMaterial material4;
+	//material4.flags = gtMaterialFlag::MF_BLEND;
+	material4.opacity = 0.1f;
+	material4.textureLayer[ 0u ].texture = texture4.data();
 
+	
     while( my_system->update() ){
 
-		u32 now = my_system->getTime();
-		
-		deltaTime = f32(now - then)*0.001f;
- 
-		time += now - then;
 
-		then = now;
-
-
-		if( time > 1000u ){
-			gtLogWriter::printInfo( u"deltaTime %f", deltaTime );
-			
-			time = 0u;
+		if( events.isKeyDown( gtKey::K_ESCAPE ) ){
+			break;
 		}
+
+		if( events.lmb ){
+			gtLogWriter::printInfo( u"LMB" );
+		}
+
+		if( events.rmb ){
+			gtLogWriter::printInfo( u"RMB" );
+		}
+
+		if( events.mmb ){
+			gtLogWriter::printInfo( u"MMB" );
+		}
+
+		/* вывод координат когда будет нажата клавиша пробел */
+		if( events.isKeyDown( gtKey::K_SPACE ) ){
+			gtLogWriter::printInfo( u"Mouse [%i][%i]", events.mouse_x, events.mouse_y );
+		}
+
+		if( events.isKeyDown( gtKey::K_UP ) ){
+			gtLogWriter::printInfo( u"UP" );
+		}
+		if( events.isKeyDown( gtKey::K_DOWN ) ){
+			gtLogWriter::printInfo( u"DOWN" );
+		}
+		if( events.isKeyDown( gtKey::K_LEFT ) ){
+			gtLogWriter::printInfo( u"LEFT" );
+		}
+		if( events.isKeyDown( gtKey::K_RIGHT ) ){
+			gtLogWriter::printInfo( u"RIGHT" );
+		}
+
+		if( events.isKeyUp( gtKey::K_RIGHT ) ){
+			gtLogWriter::printInfo( u"RIGHT UP" );
+		}
+		
         if( driver1 ){
             driver1->beginRender(true,gtColor(1.f,0.f,0.f,1.f));
 
-			angle += 4 * deltaTime;
-			if( angle > 720.f ) angle = 0.f;
+			driver1->draw2DImage( v4i({ 0, 0, 400, 300 }), material1 );
+			driver1->draw2DImage( v4i({ 400, 0, 800, 300 }), material2 );
+			driver1->draw2DImage( v4i({ 0, 300, 400, 600 }), material3 );
+			driver1->draw2DImage( v4i({ 400, 300, 800, 600 }), material4 );
 
-			posx += 0.4f * sin(angle);
-			posy += 0.4f * cos(angle);
-
-			driver1->draw2DImage( v4i({ 0 + (s32)posx, 0 + (s32)posy, 50 + (s32)posx, 50 + (s32)posy }), v4i( { 19, 381, 80, 460 } ), material);
-
-			//	отдельная буква
-			driver1->draw2DImage( v4i({ 0, 0, 100, 100 }), material);
-
-			//	
-			driver1->draw2DImage( v4i({ 200, 0, 600, 400 }), v4i( { 0, 0, 1024, 1024 } ), material);
-
-
-            driver1->endRender();
+			driver1->endRender();
         }
  
     }

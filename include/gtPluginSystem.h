@@ -18,6 +18,7 @@ namespace gost{
 	
 	//	указывается при точном выборе плагина загрузки картинок
 	const gtString GT_GUID_IMPORT_IMAGE_BMP( u"{B0904D7B-5AA3-4023-BC99-ECA2232E1EBE}" );
+	const gtString GT_GUID_IMPORT_IMAGE_PNG( u"{C6FFFD23-DA18-4D78-9DF2-65B5DA0EF41E}" );
 
 	//	для загрузки функций из плагинов
 	using gtGetPluginInfo = void(*)(gtPluginInfo&);

@@ -20,6 +20,7 @@
 #include <gtInfo.h>
 #include <gtTypes.h>
 
+#include <gtInput.h>
 #include <gtEvent.h>
 
 #include <gtString.h>

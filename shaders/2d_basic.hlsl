@@ -12,6 +12,11 @@ cbuffer cbVerts{
 	float2 t4;
 };
 
+cbuffer cbPixel{
+	float opacity;
+	float3 padding;
+};
+
 struct VSIn{
     uint vertexId : SV_VertexID;
 };
@@ -62,6 +67,7 @@ PSOut PSMain(VSOut input)
 	
     output.color = diffuseColor;
 	
-	output.color.a = 255;
+	if( output.color.a < opacity ) discard;
+	
     return output;
 }

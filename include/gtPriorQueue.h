@@ -1,68 +1,23 @@
 ﻿//	GOST
 
 #pragma once
-#ifndef __GT_EVENT_H__
-#define __GT_EVENT_H__
+#ifndef __GT_PRIOR_QUEUE_H__
+#define __GT_PRIOR_QUEUE_H__
 
 /*
 */
 
 namespace gost{
 
-#define GT_EVENT_WINDOW_SIZING   1u
-#define GT_EVENT_WINDOW_RESTORE  2u
-#define GT_EVENT_WINDOW_MAXIMIZE 3u
-#define GT_EVENT_WINDOW_MINIMIZE 4u
-#define GT_EVENT_WINDOW_MOVE     5u
-#define GT_EVENT_WINDOW_PAINT    6u
-
-#define GT_EVENT_MASK_KEY_PRESS 0x80000000
-#define GT_EVENT_MASK_KEYS		0x7FFFFFFF
-
-#define GT_EVENT_MASK_MOUSE_LMB	1u
-#define GT_EVENT_MASK_MOUSE_RMB	2u
-#define GT_EVENT_MASK_MOUSE_MMB	4u
-#define GT_EVENT_MASK_MOUSE_EXTRA1 8u
-#define GT_EVENT_MASK_MOUSE_EXTRA2 16u
-#define GT_EVENT_MASK_MOUSE_LMB_DBL 32u
-#define GT_EVENT_MASK_MOUSE_RMB_DBL 64u
-
-		//	событие
-	struct gtEvent{
-
-		gtEvent( void ):
-			type( ET_NONE ),
-			value1( -1 ),
-			value2( -1 ),
-			dataSize( 0u ),
-			data( nullptr )
-		{}
-
-		enum type_t{
-			ET_NONE,
-			ET_KEY,
-			ET_CHAR,
-			ET_MOUSE,
-			ET_JOY,
-			ET_GUI,
-			ET_SYSTEM
-		}type;
+		//	очередь с приоритетом
+	template<typename Type>
+	class gtPriorQueue{
 		
-		s32 value1;
-		s32 value2;
+	public:
 
-		u32 dataSize;
-		void* data;
 
 	};
 	
-	class gtEventConsumer{
-	public:
-
-		virtual void processEvent( const gtEvent& ev ) = 0;
-
-	};
-
 }
 
 

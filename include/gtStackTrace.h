@@ -65,7 +65,7 @@ constexpr u32 gtMaxStackFrames = 1024u;
 #if defined( GT_USE_STACK_TRACE )
 
 #if defined( GT_PLATFORM_WIN32 )
-#include <gtStackTraceWin32.cxx>
+#include <gtStackTraceWin32.inl>
 #else
 #error Класс gtStackTrace поддерживается только для Win32
 #endif
