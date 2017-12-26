@@ -154,9 +154,11 @@
     <ClInclude Include="..\include\gtColor.h" />
     <ClInclude Include="..\include\gtDriver.h" />
     <ClInclude Include="..\include\gtError.h" />
+    <ClInclude Include="..\include\gtEvent.h" />
     <ClInclude Include="..\include\gtFileSystem.h" />
     <ClInclude Include="..\include\gtImage.h" />
     <ClInclude Include="..\include\gtInfo.h" />
+    <ClInclude Include="..\include\gtInput.h" />
     <ClInclude Include="..\include\gtList.h" />
     <ClInclude Include="..\include\gtLoger.h" />
     <ClInclude Include="..\include\gtMainSystem.h" />
@@ -170,12 +172,14 @@
     <ClInclude Include="..\include\gtStackTrace.h" />
     <ClInclude Include="..\include\gtString.h" />
     <ClInclude Include="..\include\gtTexture.h" />
+    <ClInclude Include="..\include\gtTimer.h" />
     <ClInclude Include="..\include\gtTypes.h" />
     <ClInclude Include="..\include\gtUtilities.h" />
     <ClInclude Include="..\include\gtVector.h" />
     <ClInclude Include="..\include\gtVertex.h" />
     <ClInclude Include="..\include\gtWindow.h" />
     <ClInclude Include="gtDriverCommon.h" />
+    <ClInclude Include="gtEventSystem.h" />
     <ClInclude Include="gtFileSystemCommon.h" />
     <ClInclude Include="gtFileSystemWin32.h" />
     <ClInclude Include="gtFileWin32.h" />
@@ -186,6 +190,7 @@
     <ClInclude Include="gtPluginImportImage.h" />
     <ClInclude Include="gtPluginRender.h" />
     <ClInclude Include="gtPluginSystemImpl.h" />
+    <ClInclude Include="gtTimerWin32.h" />
     <ClInclude Include="gtWindowCommon.h" />
     <ClInclude Include="gtWindowWin32.h" />
     <ClInclude Include="stdafx.h" />
@@ -208,6 +213,7 @@
     </ClCompile>
     <ClCompile Include="gost.cpp" />
     <ClCompile Include="gtDriverCommon.cpp" />
+    <ClCompile Include="gtEventSystem.cpp" />
     <ClCompile Include="gtFileSystemCommon.cpp" />
     <ClCompile Include="gtFileSystemWin32.cpp" />
     <ClCompile Include="gtFileWin32.cpp" />
@@ -218,6 +224,7 @@
     <ClCompile Include="gtPluginImportImage.cpp" />
     <ClCompile Include="gtPluginRender.cpp" />
     <ClCompile Include="gtPluginSystemImpl.cpp" />
+    <ClCompile Include="gtTimerWin32.cpp" />
     <ClCompile Include="gtWindowCommon.cpp" />
     <ClCompile Include="gtWindowWin32.cpp" />
     <ClCompile Include="stdafx.cpp">

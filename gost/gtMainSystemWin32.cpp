@@ -13,6 +13,9 @@ namespace gost{
 
 		//	деструктор
 	gtMainSystemWin32::~gtMainSystemWin32( void ){
+		this->m_isRun = false;
+
+
 		if( s_fileSystem ){
 			delete  s_fileSystem;
 			s_fileSystem = nullptr;

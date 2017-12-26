@@ -144,6 +144,21 @@
     <ClInclude Include="..\include\gtString.h">
       <Filter>gost</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\gtTimer.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="gtTimerWin32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtEvent.h">
+      <Filter>gost</Filter>
+    </ClInclude>
+    <ClInclude Include="gtEventSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gtInput.h">
+      <Filter>gost</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -192,6 +207,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gtPluginImportImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtTimerWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gtEventSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

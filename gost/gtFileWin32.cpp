@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 
-
 gtFileWin32::gtFileWin32( const gtString& fileName, gtFileSystem::FileMode mode,
 			gtFileSystem::FileAccessMode access,
 			gtFileSystem::FileAction action,
@@ -14,7 +13,7 @@ m_pointerPosition( 0u )
 #ifdef GT_DEBUG
 	m_debugName.assign( u"gtFileWin32" );
 #endif
-
+	
 	m_desiredAccess = 0;
 	switch( access ){
 	case gost::gtFileSystem::EFAM_READ:

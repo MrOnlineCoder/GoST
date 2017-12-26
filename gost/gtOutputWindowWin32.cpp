@@ -155,6 +155,15 @@ void	gtOutputWindowWin32::hide( void ){
 
 	///	Напечатает текст
 void	gtOutputWindowWin32::print( const gtString& text ){
+	static unsigned long s_totalChars;
+
+	s_totalChars += text.size();
+
+	if ( s_totalChars > 0x7000 ) {
+		SendMessage( m_hWndBuffer, EM_SETSEL, 0, -1 );
+		s_totalChars = text.size();
+	}
+
 	SendMessage( m_hWndBuffer, EM_LINESCROLL, 0, 0xffff );
 	SendMessage( m_hWndBuffer, EM_SCROLLCARET, 0, 0 );
 	SendMessage( m_hWndBuffer, EM_REPLACESEL, 0, (LPARAM) text.data() );
